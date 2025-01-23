@@ -1,4 +1,3 @@
-
 import dotenv from 'dotenv';
 import db from './db/db.js';
 import { app } from './app.js';
