@@ -4,6 +4,21 @@ import { User } from "../models/user.model.js";
 import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+// Generate Refresh Token and Access Token
+const generateAccessAndRefreshToken = async (userid) =>{
+     try{
+        const user = await User.findById(userid);
+        const refreshToken =  user.generateRefreshToken();
+        const accessToken =  user.generateAccessToken();
+        user.refreshToken = refreshToken;
+        await user.save({validateBeforeSave: false});
+        return {accessToken, refreshToken}
+     }
+     catch(error){
+        throw new apiError('Failed to generate tokens', 500)
+     }
+}
+//Register
 const registerUser = asyncHandler(async (req,res)=>{
     const {fullName,email,username,password} = req.body;
     // Validation
@@ -53,5 +68,37 @@ const registerUser = asyncHandler(async (req,res)=>{
     )
     
 })
+// Login
+const loginUser = asyncHandler(async (req, res) => {
+    const { username, email, password } = req.body;
+    // Validation
+    if(!username && !email){
+        throw new apiError("All fields are required", 400)
+    }
+    const existedUser = await User.findOne({ $or: [{ username} , {email}]})
+    if(!existedUser){
+        throw new apiError("Invalid Username or Email", 404)
+    }
+    const isPasswordValid = await existedUser.isPasswordCorrect(password)
+    // const isMatch = await bcrypt.compare(password, existedUser.password);
+    if(!isPasswordValid){
+        throw new apiError("Invalid Password", 401)
+    }
+    const {accessToken , refreshToken} = await generateAccessAndRefreshToken(existedUser._id);
+     
+    const user = await User.findById(existedUser._id).select("-access_token -password")
+    const options = {
+        httpOnly : true,
+        secure:true
+    }
+     return res
+     .status(200)
+     .cookie('access_token', accessToken, options)
+     .cookie("refresh_token", refreshToken, options)
+     .json(new ApiResponse(200, "User logged in successfully", user))
+})
 
-export { registerUser }
+// Logout
+
+
+export { registerUser , loginUser,}
