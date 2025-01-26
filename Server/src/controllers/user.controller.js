@@ -200,7 +200,7 @@ const updateUserAccount = asyncHandler(async (req,res)=>{
 
 // Update User Avatar
  const updateUserAvatar = asyncHandler(async(req,res)=>{
-    const avatarLocalPath = req.file?.path
+    const avatarLocalPath = req.files['avatar'][0].path
     if(!avatarLocalPath){
         throw new apiError("Avatar is required", 400)
     }
@@ -219,7 +219,7 @@ const updateUserAccount = asyncHandler(async (req,res)=>{
  })
 // Update User CoverImage
  const updateUserCoverImage = asyncHandler(async(req,res)=>{
-    const coverImageLocalPath = req.file?.path
+    const coverImageLocalPath = req.files['coverImage'][0]?.path
     if(!coverImageLocalPath){
         throw new apiError("CoverImage is required", 400)
     }
@@ -246,5 +246,5 @@ export {
     updateUserAccount,
     updateUserAvatar,
     updateUserCoverImage,
- 
+
 }

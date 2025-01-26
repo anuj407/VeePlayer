@@ -21,21 +21,23 @@ router.route("/register").post(
 router.route("/login").post(loginUser)
 router.route("/logout").post(verifyJwt, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
-router.route("/change-password").post(changePassword)
-router.route("/getUser").get(getUserProfile)
-router.route("updateUserAccount").post(updateUserAccount)
-router.route("updateAvatar").post(
-    upload.fields({
+router.route("/change-password").post(verifyJwt, changePassword)
+router.route("/getUser").get(verifyJwt,getUserProfile)
+router.route("/updateUserAccount").post(verifyJwt,updateUserAccount)
+router.route("/updateAvatar").post(
+    upload.fields([{
     name: "avatar",
     maxCount: 1
-  }),
+  }]),
+  verifyJwt,
   updateUserAvatar
 )
-router.route("updateCoverImage").post(
-    upload.fields({
+router.route("/updateCoverImage").post(
+    upload.fields([{
     name: "coverImage",
     maxCount: 1
-  }),
+  }]),
+  verifyJwt,
   updateUserCoverImage
 )
 export default router;
