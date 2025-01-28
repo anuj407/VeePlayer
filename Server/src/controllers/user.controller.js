@@ -238,13 +238,13 @@ const updateUserAccount = asyncHandler(async (req,res)=>{
  })
 // Get User Profile
 const getUserChannelProfile = asyncHandler(async (req,res)=>{
-    const username= req.params;
+    const username= req.params.username;
     if(!username?.trim()){
         throw new apiError('Username is required', 400)
     }
     const channel = await User.aggregate([
         {
-            $match:{username :username.toLowerCase()}
+            $match:{username :username}
         },
         {
             $lookup:{
@@ -307,24 +307,34 @@ const getUserChannelProfile = asyncHandler(async (req,res)=>{
                 from:"videos",
                 localField:"watchHistory",
                 foreignField:"_id",
-                as:"watchHistory"
-            },
-            pipeline:[{
-                $lookup:{
-                    from:"user",
-                    localField:"owner",
-                    foreignField:"_id",
-                    as:"owner"
-                },
-                pipeline:[{
-                    $project:{
-                        fullName:1,
-                        username:1,
-                        avatar:1
-                       
+                as:"watchHistory",
+                pipeline:[
+                    {
+                        $lookup:{
+                            from:"user",
+                            localField:"owner",
+                            foreignField:"_id",
+                            as:"owner",
+                            pipeline:[
+                                {
+                                    $project:{
+                                        fullName:1,
+                                        username:1,
+                                        avatar:1                       
+                                    }
+                                }
+                            ]
+                        },                  
+                    },
+                    {
+                        $addFields:{
+                            owner:{
+                                $first: "$owner"
+                            }
+                        }
                     }
-                }]
-            }]
+                ]
+            }       
         }
     ])
     return res
