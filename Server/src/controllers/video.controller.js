@@ -43,6 +43,25 @@ const uploadVideo = asyncHandler( async (req, res)=>{
     .json(new ApiResponse(201,"Successfully uploaded video",createdVideo))
 })
 
+const UpdateViews = asyncHandler(async (req, res) => {
+    const videoId = req.params.id
+    if(!videoId){
+        throw new apiError("Video id is required",400)
+    }
+    const video = await Video.findByIdAndUpdate(videoId,
+        {
+            $inc: { views: 1 }
+        },
+        { new: true }
+    )
+    if(!video){
+        throw new apiError("Failed to update views",500)
+    }
+    return res
+    .status(200)
+    .json(new ApiResponse(200,"Views updated successfully",video))
+})
 export {
-    uploadVideo
+    uploadVideo,
+    UpdateViews
 }

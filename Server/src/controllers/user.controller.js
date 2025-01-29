@@ -106,7 +106,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     // Remove refresh token from user document in database
      await User.findByIdAndUpdate(
         req.user._id,
-        { refreshToken: undefined },
+        { $unset: {refreshToken : 1} },
         { new: true }
      )
      const options = {
