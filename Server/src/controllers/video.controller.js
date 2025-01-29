@@ -4,6 +4,7 @@ import { apiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { User } from "../models/user.model.js";
 
 const PublishedVideo = asyncHandler(async (req, res)=>{
    const {title,description} = req.body
@@ -58,6 +59,11 @@ const UpdateViews = asyncHandler(async (req, res) => {
     if(!video){
         throw new apiError("Failed to update views",500)
     }
+    await User.findByIdAndUpdate(
+        req.user?._id,
+        {$set :{watchHistory:videoId}},
+        { new: true }
+    )
     return res
     .status(200)
     .json(new ApiResponse(200,"Views updated successfully",video))
