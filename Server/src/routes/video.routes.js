@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { UpdateViews, uploadVideo } from "../controllers/video.controller.js";
+import { getAllVideos, getVideoById, PublishedVideo, updateVideo, UpdateViews } from "../controllers/video.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
@@ -16,8 +16,14 @@ router.route("/uploadVideo").post(
         }
     ]),
     verifyJwt,
-    uploadVideo
+    PublishedVideo
 )
 router.route("/views/:id").post(verifyJwt,UpdateViews)
-
+router.route("/getAllVideos/:userId").get(getAllVideos)
+router.route("/getVideo/:videoId").get(getVideoById)
+router.route("/updateVideo").post(
+    upload.single("thumbnail"),
+    verifyJwt,
+    updateVideo
+)
 export default router;
