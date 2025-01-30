@@ -92,10 +92,38 @@ const getVideoById = asyncHandler(async (req, res) => {
     if(!videoId){
         throw new apiError("Video id is required",400)
     }
-    const video = await Video.findById(videoId)
-    if(!video){
-        throw new apiError("Failed to fetch video",500)
-    }
+
+   const video= await Video.aggregate([
+        {
+            $match:{_id: new mongoose.Types.ObjectId(videoId)}
+        },
+        {
+            $lookup:{
+                from:"likes",
+                localField:"_id",
+                foreignField:"video",
+                as:"likes",               
+            }
+        },
+        {
+            $addFields:{
+                totalLikes:{$size:"$likes"}
+            }
+        },
+        {
+            $project:{
+                _id:1,
+                videoFile:1,
+                title:1,
+                description:1,
+                thumbnail:1,
+                views:1,
+                createdAt:1,
+                owner:1,
+                totalLikes:1
+            }
+        }
+    ])
     return res
    .status(200)
    .json(new ApiResponse(200,"Video fetched successfully",video))
