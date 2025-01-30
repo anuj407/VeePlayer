@@ -5,7 +5,6 @@ import {uploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
-import { pipeline } from "stream";
 
 // Generate Refresh Token and Access Token
 const generateAccessAndRefreshToken = async (userid) =>{
@@ -311,7 +310,7 @@ const getUserChannelProfile = asyncHandler(async (req,res)=>{
                 pipeline:[
                     {
                         $lookup:{
-                            from:"user",
+                            from:"users",
                             localField:"owner",
                             foreignField:"_id",
                             as:"owner",
