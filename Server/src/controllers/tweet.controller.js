@@ -2,9 +2,10 @@ import { Tweet } from "../models/tweet.model.js"
 import { apiError } from "../utils/apiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
+import mongoose from "mongoose"
 
 const createTweet = asyncHandler(async(req, res)=>{
-       const content = req.body
+       const content = req.body.content
        if(!content){
             throw new apiError("Content is required",400)
        }
@@ -26,7 +27,33 @@ const getAllTweets = asyncHandler(async(req, res)=>{
     if(!userId){
         throw new apiError("User id is required",400)
     }
-    const allTweet = await Tweet.find({user: userId})
+    const allTweet = await Tweet.aggregate([
+        {
+            $match:{user: new mongoose.Types.ObjectId(userId)}
+        },
+        {
+            $lookup:{
+                from:"likes",
+                localField:"_id",
+                foreignField:"tweet",
+                as:"likes"
+            }
+        },
+        {
+            $addFields:{
+                totalLikes:{$size:"$likes"}
+            }
+        },
+        {
+            $project:{
+                _id:1,
+                user:1,
+                content:1,
+                totalLikes:1,
+                createdAt:1
+            }
+        }
+    ])
     if(!allTweet){
         throw new apiError("Failed to Fetch all Tweets",404)
     }
@@ -36,14 +63,14 @@ const getAllTweets = asyncHandler(async(req, res)=>{
 })
 const updateTweet = asyncHandler(async(req, res)=>{
     const tweetId = req.params.tweetId
-    const newContent = req.body
+    const newContent = req.body.content
     if(!tweetId){
         throw new apiError("Tweet id is required",400)
     }
     const updatedTweet = await Tweet.findByIdAndUpdate(
         tweetId,
         {
-            $set: newContent
+            $set: {content:newContent}
         },
         {new: true}
     )

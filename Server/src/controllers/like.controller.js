@@ -52,9 +52,9 @@ const toggleCommentLike = asyncHandler(async(req, res)=>{
   
 })
 const toggleTweetLike = asyncHandler(async(req, res)=>{
-    const tweetId = req.params.teewtId;
+    const tweetId = req.params.tweetId;
     if(!tweetId){
-        throw new apiError("Teewt id is required",400)
+        throw new apiError("Tweet id is required",400)
     }
     const existedike = await Like.findOne({likedBy:req.user._id, tweet:tweetId})
     if(existedike){

@@ -3,10 +3,10 @@ import { getLikedVideos, toggleCommentLike, toggleTweetLike, toggleVideoLike } f
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 
 const router = Router()
-
-router.route("/toggle-video-like/:videoId").post(verifyJwt, toggleVideoLike)
+router.use(verifyJwt)
+router.route("/toggle-video-like/:videoId").post(toggleVideoLike)
 router.route("/toggle-comment-like/:commentId").post(toggleCommentLike)
 router.route("/toggle-tweet-like/:tweetId").post(toggleTweetLike)
-router.route("/liked-videos").get(verifyJwt, getLikedVideos)
+router.route("/liked-videos").get(getLikedVideos)
 
 export default router;
