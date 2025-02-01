@@ -3,3 +3,6 @@ body{
     background-color: black;
     color: white;
 }
+#category{
+    scrollbar-width: none;
+}

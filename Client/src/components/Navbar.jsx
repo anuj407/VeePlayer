@@ -4,7 +4,6 @@ function Navbar() {
     <>
         <div className="w-screen h-[5rem] px-5 flex justify-between items-center">
            <div className="flex items-center pl-5">
-              {/* <assets.IoMenuOutline className="text-4xl"/> */}
               <div className="flex items-center gap-1">
                   <img className="w-14" src={assets.logo} alt="" />
                   <h4 className="text-white text-xl font-semibold">VeePlayer</h4>
