@@ -1,24 +1,10 @@
 import {Router} from "express"
-import { changePassword, getUserChannelProfile, getCurrentUserProfile, getWatchHistory, loginUser, logoutUser, refreshAccessToken, registerUser, updateUserAccount, updateUserAvatar, updateUserCoverImage } from "../controllers/user.controller.js";
+import { changePassword, getUserChannelProfile, getCurrentUserProfile, getWatchHistory, logoutUser, refreshAccessToken, updateUserAccount, updateUserAvatar, updateUserCoverImage, SignInUser } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 const router = Router()
 
-router.route("/register").post(
-    // multer middleware to handle file uploads.
-    upload.fields([
-        {
-            name: "avatar",
-            maxCount: 1
-        },
-        {
-            name: "coverImage",
-            maxCount: 1
-        }
-    ]),
-    registerUser
-)
-router.route("/login").post(loginUser)
+router.route("/register").post(SignInUser)
 router.route("/logout").post(verifyJwt, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/change-password").post(verifyJwt, changePassword)

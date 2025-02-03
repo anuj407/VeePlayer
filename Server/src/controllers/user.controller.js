@@ -22,82 +22,49 @@ const generateAccessAndRefreshToken = async (userid) =>{
      }
 }
 //Register
-const registerUser = asyncHandler(async (req,res)=>{
-    const {fullName,email,username,password} = req.body;
+const SignInUser = asyncHandler(async (req,res)=>{
+    const {fullName,email,avatar} = req.body;
     // Validation
-    if([fullName,email,username,password].some((field)=> field?.trim() === ''))
+    if([fullName,email,avatar].some((field)=> field?.trim() === ''))
     {
          throw new apiError('All fields are required', 400)
     }
     // Check if user already exists
-    const existedUser = await User.findOne({
-        $or: [{email}, {username}]
-    })
+    const existedUser = await User.findOne({email: email})
+
+    // Saved Tokens
+    let accessTokens;
+    let refreshTokens;
     if(existedUser){
-        throw new apiError('User already exists', 409)
+        const {accessToken , refreshToken} = await generateAccessAndRefreshToken(existedUser._id);
+        accessTokens=accessToken;
+        refreshTokens=refreshToken;
     }
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    let coverImageLocalPath;    
-    if (req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0) {
-        coverImageLocalPath = req.files?.coverImage[0]?.path ;
+    else{
+        const user = await User.create({
+            fullName,
+            email,
+            avatar : avatar || "",
+            coverImage: ""
+        })
+        const createdUser = await User.findById(user._id)
+        if(!createdUser) throw new apiError("Something went wrong when registering the user", 500);   
+        const {accessToken , refreshToken} = await generateAccessAndRefreshToken(createdUser._id);
+        accessTokens=accessToken;
+        refreshTokens=refreshToken;
     }
-    
-    if(!avatarLocalPath){
-        throw new apiError("Avatar is required", 400)
-    }
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
 
-    if(!avatar){
-        throw new apiError("Failed to upload avatar", 500)
-    }
-    // Create new user
-    const user = await User.create({
-        fullName,
-        email,
-        username: username.toLowerCase(),
-        password,
-        avatar,
-        coverImage: coverImage || ""
-    })
+    const user = await User.findOne({email:email},{refreshToken:0})
 
-    const createdUser = await User.findById(user._id).select(
-        "-password -refreshToken"
-    )
-    if(!createdUser) throw new apiError("Something went wrong when registering the user", 500);
-    
-    return res.status(201).json(
-        new ApiResponse(200,"User created successfully",createdUser)
-    )
-    
-})
-// Login
-const loginUser = asyncHandler(async (req, res) => {
-    const { username, email, password } = req.body;
-    // Validation
-    if(!username && !email){
-        throw new apiError("All fields are required", 400)
-    }
-    const existedUser = await User.findOne({ $or: [{ username} , {email}]})
-    if(!existedUser){
-        throw new apiError("Invalid Username or Email", 404)
-    }
-    const isPasswordValid = await existedUser.isPasswordCorrect(password)
-   
-    if(!isPasswordValid){
-        throw new apiError("Invalid Password", 401)
-    }
-    const {accessToken , refreshToken} = await generateAccessAndRefreshToken(existedUser._id);
-    const user = await User.findById(existedUser._id).select("-access_token -password")
     const options = {
         httpOnly : true,
         secure:true
     }
      return res
      .status(200)
-     .cookie('accessToken', accessToken, options)
-     .cookie("refreshToken", refreshToken, options)
-     .json(new ApiResponse(200, "User logged in successfully", user))
+     .cookie('accessToken', accessTokens, options)
+     .cookie("refreshToken", refreshTokens, options)
+     .json(new ApiResponse(200, "User SignIn successfully", user))   
 })
 
 // Logout
@@ -341,8 +308,7 @@ const getUserChannelProfile = asyncHandler(async (req,res)=>{
     .json(new ApiResponse(200,"Watch History retrieved successfully",user[0].watchHistory))
 })
 export {
-    registerUser, 
-    loginUser, 
+    SignInUser,  
     logoutUser , 
     refreshAccessToken,
     changePassword,
