@@ -6,7 +6,10 @@ import { IoNotificationsSharp } from "react-icons/io5";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdChevronLeft } from "react-icons/md";
 import { MdChevronRight } from "react-icons/md";
-
+import { PiSignInBold } from "react-icons/pi";
+import { IoSettingsOutline } from "react-icons/io5";
+import { LiaHomeSolid } from "react-icons/lia";
+import { PiVideo } from "react-icons/pi";
 export const assets ={
     logo,
     FiSearch,
@@ -15,7 +18,12 @@ export const assets ={
     IoNotificationsSharp,
     IoPersonCircleOutline,
     MdChevronLeft,
-    MdChevronRight
+    MdChevronRight,
+    PiSignInBold,
+    IoSettingsOutline,
+    LiaHomeSolid,
+    PiVideo,
+
 }
 
 export const category = [
