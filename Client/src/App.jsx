@@ -7,6 +7,7 @@ function App() {
     {/* <Home/> */}
     <Routes>
       <Route path="/" element={<Home/>} />
+      <Route path="/profile" element={<Home/>} />
     </Routes>
     </div>
   )
