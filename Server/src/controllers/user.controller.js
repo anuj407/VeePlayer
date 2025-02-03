@@ -21,6 +21,18 @@ const generateAccessAndRefreshToken = async (userid) =>{
         throw new apiError('Failed to generate tokens', 500)
      }
 }
+const AccessRefreshToken = asyncHandler(async(req,res)=>{
+    const refreshToken = req.cookies.refreshToken;
+    console.log(refreshToken)
+    if(!refreshToken){
+        throw new apiError("Refresh token is required",401)
+    }
+    const user = await User.findOne({refreshToken});
+    if(!user){
+        throw new apiError("Invalid refresh token",401)
+    }
+    return res.json({refreshToken})  
+})
 //Register
 const SignInUser = asyncHandler(async (req,res)=>{
     const {fullName,email,avatar} = req.body;
@@ -309,6 +321,7 @@ const getUserChannelProfile = asyncHandler(async (req,res)=>{
 })
 export {
     SignInUser,  
+    AccessRefreshToken,
     logoutUser , 
     refreshAccessToken,
     changePassword,
