@@ -5,7 +5,6 @@ const userSchema = new Schema(
     {
         username: {
             type: String,
-            required: true,
             unique: true,
             lowercase: true,
             trim: true,
@@ -26,7 +25,6 @@ const userSchema = new Schema(
         },
         password: {
             type: String,
-            required: [true, 'Password is required']
         },
         avatar: {
             type: String,
@@ -42,7 +40,6 @@ const userSchema = new Schema(
             type: Schema.Types.ObjectId,
             ref: "Video"
         }
-
         ],
         refreshToken:{
             type: String,
