@@ -16,7 +16,7 @@ function Category() {
            <assets.IoMenuOutline />
         </div>
         <div className="w-[92vw] pr-4 flex items-center">
-           <button className={` text-4xl w-8 h-8 rounded-full cursor-pointer flex items-center justify-center hover:bg-[#222222]`}> <assets.MdChevronLeft className={`${scroll<1 && `hidden`}`}/></button>
+           <button className={`text-4xl w-8 h-8 rounded-full cursor-pointer flex items-center justify-center hover:bg-[#222222]`}> <assets.MdChevronLeft className={`${scroll<1 && `hidden`}`}/></button>
             <div id="category" ref={containerRef} onScroll={()=>handleScroll()} className="flex gap-x-3 px-2 rounded-full overflow-x-scroll ">
             {
                 category.map((item,index)=>
