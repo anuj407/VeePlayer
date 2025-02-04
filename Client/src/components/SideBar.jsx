@@ -2,7 +2,7 @@ import { assets } from "../assets/assets"
 function SideBar() {
   return (
     <>
-        <div className="w-28 h-[85.5vh] border-r-2 border-[#222222] flex flex-col gap-10 text-sm">
+        <div className="w-28 h-[85.5vh] bg-black flex flex-col gap-10 text-sm fixed top-28">
             <div className="mt-10 w-full flex flex-col items-center cursor-pointer">
                 <assets.LiaHomeSolid className="text-3xl"/>
                 <h4 className="text-center">Home</h4>

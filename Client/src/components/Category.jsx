@@ -11,7 +11,7 @@ function Category() {
         setTotalScroll(containerRef.current.scrollWidth)
     };
   return (
-    <div className="flex items-center pl-10 gap-x-8 ">
+    <div className="h-16 bg-black flex items-center pl-10 gap-x-8 fixed top-18 z-20">
         <div className="text-4xl bg-zinc-900">
            <assets.IoMenuOutline />
         </div>

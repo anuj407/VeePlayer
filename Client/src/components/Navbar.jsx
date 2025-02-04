@@ -77,7 +77,7 @@ function Navbar() {
   
   return (
     <>
-        <div className="w-screen h-[5rem] px-5 flex justify-between items-center">
+        <div className="w-screen h-[5rem] -mt-0.5 px-5 bg-black flex justify-between items-center fixed top-0 z-20">
            <div className="flex items-center pl-5">
               <div className="flex items-center gap-1">
                   <img className="w-14" src={assets.logo} alt="" />
