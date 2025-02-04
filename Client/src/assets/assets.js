@@ -11,6 +11,10 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { LiaHomeSolid } from "react-icons/lia";
 import { PiVideo } from "react-icons/pi";
 import { BiDotsVerticalRounded } from "react-icons/bi";
+import { BiLike } from "react-icons/bi";
+import { BiDislike } from "react-icons/bi";
+import { PiShareFat } from "react-icons/pi";
+import { LiaDownloadSolid } from "react-icons/lia";
 export const assets ={
     logo,
     FiSearch,
@@ -25,7 +29,11 @@ export const assets ={
     LiaHomeSolid,
     PiVideo,
     BiDotsVerticalRounded,
-    
+    BiLike,
+    BiDislike,
+    PiShareFat,
+    LiaDownloadSolid,
+ 
 }
 
 export const category = [
