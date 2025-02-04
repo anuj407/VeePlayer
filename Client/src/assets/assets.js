@@ -10,6 +10,7 @@ import { PiSignInBold } from "react-icons/pi";
 import { IoSettingsOutline } from "react-icons/io5";
 import { LiaHomeSolid } from "react-icons/lia";
 import { PiVideo } from "react-icons/pi";
+import { BiDotsVerticalRounded } from "react-icons/bi";
 export const assets ={
     logo,
     FiSearch,
@@ -23,7 +24,8 @@ export const assets ={
     IoSettingsOutline,
     LiaHomeSolid,
     PiVideo,
-
+    BiDotsVerticalRounded,
+    
 }
 
 export const category = [
