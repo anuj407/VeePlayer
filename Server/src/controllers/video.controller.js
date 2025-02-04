@@ -68,7 +68,43 @@ const UpdateViews = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200,"Views updated successfully",video))
 })
+//for all users videos 
+const getVideos= asyncHandler(async(req, res)=>{
+    const videos = await Video.aggregate([
+        {
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"ownerInfo",
+                pipeline:[
+                    {
+                        $project:{
+                            fullName:1,
+                            username:1,
+                            avatar:1                       
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                owner:{
+                    $first: "$ownerInfo"
+                }
+            }
+        }
+    ])
+    if(!videos){
+        throw new apiError("Failed to fetch videos",500)
+    }
+    return res
+   .status(200)
+   .json(new ApiResponse(200,"Videos fetched successfully",videos))
+})
 
+// for an user
 const getAllVideos = asyncHandler(async (req, res) => {
     const userId = req.params.userId
     if(!userId){
@@ -197,5 +233,6 @@ export {
     getVideoById,
     updateVideo,  // Update video with title, description and/or thumbnail
     deleteVideo,
-    togglePublishedStatus
+    togglePublishedStatus,
+    getVideos  // for all users videos
 }
