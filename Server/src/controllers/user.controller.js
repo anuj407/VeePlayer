@@ -23,7 +23,6 @@ const generateAccessAndRefreshToken = async (userid) =>{
 }
 const AccessRefreshToken = asyncHandler(async(req,res)=>{
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken)
     if(!refreshToken){
         throw new apiError("Refresh token is required",401)
     }
@@ -31,7 +30,7 @@ const AccessRefreshToken = asyncHandler(async(req,res)=>{
     if(!user){
         throw new apiError("Invalid refresh token",401)
     }
-    return res.json({refreshToken})  
+    return res.json(user)  
 })
 //Register
 const SignInUser = asyncHandler(async (req,res)=>{
