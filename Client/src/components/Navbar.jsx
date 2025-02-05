@@ -4,14 +4,14 @@ import { auth } from './Firebase'
 import { useEffect, useState,  } from 'react';
 
 function Navbar() {
-  
+const [avatar,setAvatar]= useState()
   const googleSignIn = async()=>{
     try{
       // Sign in with Google
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      console.log(user);
+      setAvatar(user.photoURL)
       const userData = {
         username: user.uid,
         fullName: user.displayName,
@@ -52,13 +52,18 @@ function Navbar() {
     }
   }
   const [token,setToken]= useState(false)
+  const [showMenu,setShowMenu] = useState(false)
   const refreshToken = async()=>{
     try{
       const response = await fetch("http://localhost:8080/api/v1/users/me", {
         method: "get",
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
       const data = await response.json();
+      setAvatar(data.avatar)
       if(data.refreshToken){
         setToken(true)
       }
@@ -67,11 +72,11 @@ function Navbar() {
       console.error(error);
     }
   }
-  
+  const handleProfile = ()=>{
+       setShowMenu(!showMenu)
+  }
     useEffect(()=>{
-      if(window.location.href != 'http://localhost:5173/'){
         refreshToken()
-      }
     },[])
    
   
@@ -104,15 +109,15 @@ function Navbar() {
               <span className="font-medium">Create</span>
             </button>
             <assets.IoNotificationsSharp className="text-2xl"/>
-            <div className="w-[2rem] h-[2rem] rounded-full">
+            <div onClick={()=>handleProfile()} className="w-[2rem] h-[2rem] rounded-full cursor-pointer overflow-hidden">
               {
-              // data ? <img src={avatar} alt={avatar}/> :
-               <assets.IoPersonCircleOutline className='w-full h-full'/>  
+               <img className='w-full h-full object-cover' src={avatar} alt={avatar}/> 
+              //  <assets.IoPersonCircleOutline className='w-full h-full'/>  
               }
             </div>
            </div>
         </div>
-        <div className={`${token ? '' :`hidden`} w-[14rem] h-[14rem] bg-[#222222] rounded-xl absolute right-6 top-16`}>
+        <div className={`${showMenu ? '' :`hidden`} w-[14rem] h-[14rem] bg-[#222222] rounded-xl absolute right-6 top-16 z-50`}>
             <div className="flex items-center gap-x-2 p-3">
                <assets.IoPersonCircleOutline className='w-10 h-10'/> 
                <div className="">
