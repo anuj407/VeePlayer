@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../utils/constants";
 
 function VideoCard({ video }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -15,8 +16,23 @@ function VideoCard({ video }) {
     const seconds = Math.floor(time % 60).toString().padStart(2, "0");
     return `${minutes}:${seconds}`;
   };
+  const updateViews = async ()=>{
+    const response = await fetch(`${apiUrl}/videos/views/${video._id}`,{
+       method: 'PATCH',
+       credentials: 'include',
+       headers: {
+         'Content-Type': 'application/json',
+       },
+     })
+     if(response.status==200){
+       console.log("Views updated successfully")
+     }
+   }
+  const handlePlay = () => {    
+    if(window.location.href == `http://localhost:5173/profile`){
+        updateViews()   
+    }
 
-  const handlePlay = () => {
     setIsPlaying(true);
     videoRef.current.play();
   };
@@ -27,6 +43,7 @@ function VideoCard({ video }) {
   };
   const handleVideoClick = () => {
     navigate(`/watch/${video._id}`);
+    updateViews()
   };
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -70,7 +87,7 @@ function VideoCard({ video }) {
           alt=""
         />
         {/* Video */}
-        <video ref={videoRef} className="w-full h-full" loop>
+        <video ref={videoRef} className="w-full h-full" muted loop>
           <source src={video.videoFile} />
         </video>
 
