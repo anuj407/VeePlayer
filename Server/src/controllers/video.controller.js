@@ -46,7 +46,7 @@ const PublishedVideo = asyncHandler(async (req, res)=>{
 })
 
 const UpdateViews = asyncHandler(async (req, res) => {
-    const videoId = req.params.id
+    const videoId = req.params.videoId
     if(!videoId){
         throw new apiError("Video id is required",400)
     }
@@ -129,37 +129,80 @@ const getVideoById = asyncHandler(async (req, res) => {
         throw new apiError("Video id is required",400)
     }
 
-   const video= await Video.aggregate([
+    const video = await Video.aggregate([
         {
-            $match:{_id: new mongoose.Types.ObjectId(videoId)}
+            $match: { _id: new mongoose.Types.ObjectId(videoId) }
         },
         {
-            $lookup:{
-                from:"likes",
-                localField:"_id",
-                foreignField:"video",
-                as:"likes",               
+            $lookup: {
+                from: "likes",
+                localField: "_id",
+                foreignField: "video",
+                as: "likes"
             }
         },
         {
-            $addFields:{
-                totalLikes:{$size:"$likes"}
+            $lookup: {
+                from: "comments",
+                localField: "_id",
+                foreignField: "video", 
+                as: "comments",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "user",
+                            foreignField: "_id",
+                            as: "commentedBy"
+                        }
+                    },
+                    {
+                        $addFields: {
+                            commentedBy: { $arrayElemAt: ["$commentedBy", 0] } 
+                        }
+                    },
+                    {
+                        $project: {
+                            _id: 1,
+                            content: 1, 
+                            createdAt: 1,
+                            commentedBy: { fullName: 1, username: 1, avatar: 1 }
+                        }
+                    }
+                ]
             }
         },
         {
-            $project:{
-                _id:1,
-                videoFile:1,
-                title:1,
-                description:1,
-                thumbnail:1,
-                views:1,
-                createdAt:1,
-                owner:1,
-                totalLikes:1
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "ownerInfo"
+            }
+        },
+        {
+            $addFields: {
+                totalLikes: { $size: "$likes" },
+                owner: { $arrayElemAt: ["$ownerInfo", 0] },
+                comments: "$comments" 
+            }
+        },
+        {
+            $project: {
+                _id: 1,
+                videoFile: 1,
+                title: 1,
+                description: 1,
+                thumbnail: 1,
+                views: 1,
+                createdAt: 1,
+                owner: 1,
+                totalLikes: 1,
+                comments: 1 
             }
         }
-    ])
+    ]);
+    
     return res
    .status(200)
    .json(new ApiResponse(200,"Video fetched successfully",video))
