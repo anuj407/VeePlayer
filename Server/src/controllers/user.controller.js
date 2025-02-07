@@ -40,6 +40,8 @@ const SignInUser = asyncHandler(async (req,res)=>{
     {
          throw new apiError('All fields are required', 400)
     }
+    const [name] = email.split("@");
+    const username = "@"+name;
     // Check if user already exists
     const existedUser = await User.findOne({email: email})
 
@@ -53,6 +55,7 @@ const SignInUser = asyncHandler(async (req,res)=>{
     }
     else{
         const user = await User.create({
+            username,
             fullName,
             email,
             avatar : avatar || "",
