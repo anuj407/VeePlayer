@@ -19,7 +19,7 @@ router.route("/uploadVideo").post(
     PublishedVideo
 )
 router.route("/home").get(getVideos)
-router.route("/views/:id").patch(verifyJwt,UpdateViews)
+router.route("/views/:videoId").patch(verifyJwt,UpdateViews)
 router.route("/getAllVideos/:userId").get(getAllVideos)
 router.route("/getVideo/:videoId").get(getVideoById)
 router.route("/updateVideo").patch(

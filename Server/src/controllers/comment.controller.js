@@ -1,6 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import {apiError} from "../utils/apiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { Comment } from "../models/comment.model.js";
 
 const addComment = asyncHandler(async (req, res)=>{
     const videoId = req.params.videoId

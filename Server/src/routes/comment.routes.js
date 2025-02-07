@@ -4,8 +4,8 @@ import {addComment, deleteComment, getAllComment, updateComment} from "../contro
 const router = Router();
 
 router.route("/add-comment/:videoId").post(verifyJwt, addComment)
-router.route("update-comment/:commentId").patch(verifyJwt, updateComment)
-router.route("delete-comment/:commentId").delete(verifyJwt, deleteComment)
-router.route("get-all-comments/:videoId").get(verifyJwt,getAllComment)
+router.route("/update-comment/:commentId").patch(verifyJwt, updateComment)
+router.route("/delete-comment/:commentId").delete(verifyJwt, deleteComment)
+router.route("/get-all-comments/:videoId").get(verifyJwt,getAllComment)
 
 export default router;
