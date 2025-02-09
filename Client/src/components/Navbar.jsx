@@ -2,83 +2,15 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
 import {assets} from '../assets/assets'
 import { auth } from './Firebase'
 import { useEffect, useState,  } from 'react';
-
+import {useDispatch, useSelector} from "react-redux"
+import { selectUser, setUserData } from '../store/Reducers/UserSlice';
+import { apiUrl } from '../utils/constants';
 function Navbar() {
-const [avatar,setAvatar]= useState()
-  const googleSignIn = async()=>{
-    try{
-      // Sign in with Google
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      setAvatar(user.photoURL)
-      const userData = {
-        username: user.uid,
-        fullName: user.displayName,
-        email: user.email,
-        avatar: user.photoURL,
-      };
-    const respose = await fetch("http://localhost:8080/api/v1/users/register", {
-        method: "POST",
-        credentials: 'include',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
-      if(respose.status==200){
-        window.location.href = "/profile"
-      }
-    }
-    catch(error){
-      console.error(error);
-    }
-    
-  }
-  const googleSignOut = async()=>{
-    try{
-      // Sign out from server
-      await fetch("http://localhost:8080/api/v1/users/logout", {
-        method: "POST",
-        credentials: 'include',
-      });
   
-      // Sign out from Firebase
-      await signOut(auth).then(()=>{
-        window.location.href = "/";
-      })
-
-    }
-    catch(error){
-      console.error(error);
-    }
-  }
-  const [token,setToken]= useState(false)
-  const [showMenu,setShowMenu] = useState(false)
-  const refreshToken = async()=>{
-    try{
-      const response = await fetch("http://localhost:8080/api/v1/users/me", {
-        method: "get",
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      setAvatar(data.avatar)
-      if(data.refreshToken){
-        setToken(true)
-      }
-    }
-    catch(error){
-      console.error(error);
-    }
-  }
-  const handleProfile = ()=>{
-       setShowMenu(!showMenu)
-  }
-    useEffect(()=>{
-        refreshToken()
-    },[])
-   
+  const registerUrl = `${apiUrl}/users/register`;
+  const logoutUrl = `${apiUrl}/users/logout`;
+  const refreshTokenUrl = `${apiUrl}/users/me`;
+  const [avatar,fullName,username,googleSignIn,googleSignOut,token,handleProfile,showMenu]= HandleNavbar(registerUrl, logoutUrl, refreshTokenUrl)
   
   return (
     <>
@@ -112,17 +44,18 @@ const [avatar,setAvatar]= useState()
             <div onClick={()=>handleProfile()} className="w-[2rem] h-[2rem] rounded-full cursor-pointer overflow-hidden">
               {
                <img className='w-full h-full object-cover' src={avatar} alt={avatar}/> 
-              //  <assets.IoPersonCircleOutline className='w-full h-full'/>  
               }
             </div>
            </div>
         </div>
         <div className={`${showMenu ? '' :`hidden`} w-[14rem] h-[14rem] bg-[#222222] rounded-xl absolute right-6 top-16 z-50`}>
             <div className="flex items-center gap-x-2 p-3">
-               <assets.IoPersonCircleOutline className='w-10 h-10'/> 
+            <div className="w-10 h-10 rounded-full overflow-hidden">
+                <img className="w-full h-full object-cover" src={avatar} alt="" />
+              </div>
                <div className="">
-                  <h3>Full Name</h3>
-                  <p>@Email123</p>
+                  <h3>{fullName}</h3>
+                  <p>{username}</p>
                </div>
             </div>
             <button className="w-full text-blue-400 mt-1.5 text-center cursor-pointer">View your channel</button>
@@ -142,4 +75,90 @@ const [avatar,setAvatar]= useState()
   )
 }
 
-export default Navbar
+export default Navbar;
+
+const HandleNavbar = (registerUrl, logoutUrl, refreshTokenUrl)=>{
+  const {avatar,fullName,username}= useSelector(selectUser)
+  const googleSignIn = async()=>{
+    try{
+      // Sign in with Google
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const userData = {
+        username: user.uid,
+        fullName: user.displayName,
+        email: user.email,
+        avatar: user.photoURL,
+      };
+    const respose = await fetch(`${registerUrl}`, {
+        method: "POST",
+        credentials: 'include',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+      console.log(respose);
+      if(respose.status==200){
+        window.location.href = "/profile"
+      }
+    }
+    catch(error){
+      console.error(error);
+    }
+    
+  }
+  const googleSignOut = async()=>{
+    try{
+      // Sign out from server
+      await fetch(`${logoutUrl}`, {
+        method: "POST",
+        credentials: 'include',
+      });
+  
+      // Sign out from Firebase
+      await signOut(auth).then(()=>{
+        window.location.href = "/";
+      })
+
+    }
+    catch(error){
+      console.error(error);
+    }
+  }
+  const [token,setToken]= useState(false)
+  const [showMenu,setShowMenu] = useState(false)
+
+  const dispatch = useDispatch();
+
+  const refreshToken = async()=>{
+    try{
+      const response = await fetch(`${refreshTokenUrl}`, {
+        method: "get",
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const data = await response.json();
+      if(response.status==200){
+        dispatch(setUserData({username: data.username,fullName: data.fullName,email: data.email,avatar: data.avatar,refreshToken: data.refreshToken}))
+      }
+      if(data.refreshToken){
+        setToken(true)
+      }
+    }
+    catch(error){
+      console.error(error);
+    }
+  }
+
+  const handleProfile = ()=>{
+    setShowMenu(!showMenu)
+  }
+  useEffect(()=>{
+    refreshToken()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]) 
+  
+  return [avatar,fullName,username,googleSignIn,googleSignOut,token,handleProfile,showMenu]
+}
