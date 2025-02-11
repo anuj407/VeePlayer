@@ -4,70 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../utils/constants";
 
 function VideoCard({ video }) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [currentTime, setCurrentTime] = useState("0:00");
-  const [duration, setDuration] = useState("0:00");
-  const videoRef = useRef(null);
-  const navigate = useNavigate()
-  const formatTime = (time) => {
-    if (isNaN(time)) return "0:00";
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60).toString().padStart(2, "0");
-    return `${minutes}:${seconds}`;
-  };
-  const updateViews = async ()=>{
-    const response = await fetch(`${apiUrl}/videos/views/${video._id}`,{
-       method: 'PATCH',
-       credentials: 'include',
-       headers: {
-         'Content-Type': 'application/json',
-       },
-     })
-     if(response.status==200){
-       console.log("Views updated successfully")
-     }
-   }
-  const handlePlay = () => {    
-    if(window.location.href == `http://localhost:5173/profile`){
-        updateViews()   
-    }
-
-    setIsPlaying(true);
-    videoRef.current.play();
-  };
-
-  const handlePause = () => {
-    setIsPlaying(false);
-    videoRef.current.pause();
-  };
-  const handleVideoClick = () => {
-    navigate(`/watch/${video._id}`);
-    updateViews()
-  };
-  useEffect(() => {
-    const videoElement = videoRef.current;
-    if (!videoElement) return;
-
-    const updateProgress = () => {
-      const progressValue =
-        (videoElement.currentTime / videoElement.duration) * 100;
-      setProgress(progressValue);
-      setCurrentTime(formatTime(videoElement.currentTime));
-    };
-
-    const setVideoDuration = () => {
-      setDuration(formatTime(videoElement.duration));
-    };
-
-    videoElement.addEventListener("timeupdate", updateProgress);
-    videoElement.addEventListener("loadedmetadata", setVideoDuration);
-
-    return () => {
-      videoElement.removeEventListener("timeupdate", updateProgress);
-      videoElement.removeEventListener("loadedmetadata", setVideoDuration);
-    };
-  }, []);
+  
+  const urlPath = `${apiUrl}/videos/views/${video._id}`
+  const [handlePlay,handlePause,handleVideoClick,isPlaying,videoRef,progress,duration,currentTime] = HandleVideoCard(urlPath,video)
 
   return (
     <div
@@ -134,3 +73,70 @@ function VideoCard({ video }) {
 }
 
 export default VideoCard;
+
+const HandleVideoCard = (urlPath,video)=>{  
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [currentTime, setCurrentTime] = useState("0:00");
+  const [duration, setDuration] = useState("0:00");
+  const videoRef = useRef(null);
+  const navigate = useNavigate()
+  const formatTime = (time) => {
+    if (isNaN(time)) return "0:00";
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60).toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
+  const updateViews = async ()=>{
+    const response = await fetch(urlPath,{
+       method: 'PATCH',
+       credentials: 'include',
+       headers: {
+         'Content-Type': 'application/json',
+       },
+     })
+     if(response.status==200){
+       console.log("Views updated successfully")
+     }
+   }
+  const handlePlay = () => {    
+    if(window.location.href == `http://localhost:5173/profile`){
+        updateViews()   
+    }
+    setIsPlaying(true);
+    videoRef.current.play();
+  };
+
+  const handlePause = () => {
+    setIsPlaying(false);
+    videoRef.current.pause();
+  };
+  const handleVideoClick = () => {
+    navigate(`/watch/${video._id}`);
+    updateViews()
+  };
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (!videoElement) return;
+
+    const updateProgress = () => {
+      const progressValue =
+        (videoElement.currentTime / videoElement.duration) * 100;
+      setProgress(progressValue);
+      setCurrentTime(formatTime(videoElement.currentTime));
+    };
+
+    const setVideoDuration = () => {
+      setDuration(formatTime(videoElement.duration));
+    };
+
+    videoElement.addEventListener("timeupdate", updateProgress);
+    videoElement.addEventListener("loadedmetadata", setVideoDuration);
+
+    return () => {
+      videoElement.removeEventListener("timeupdate", updateProgress);
+      videoElement.removeEventListener("loadedmetadata", setVideoDuration);
+    };
+  }, []);
+  return [handlePlay,handlePause,handleVideoClick,isPlaying,videoRef,progress,duration,currentTime]
+}
