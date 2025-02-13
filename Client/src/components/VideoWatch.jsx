@@ -1,39 +1,25 @@
 import { useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apiUrl } from "../utils/constants";
-import { formatDistanceToNow } from "date-fns";
+import {  formatDistanceToNowStrict } from "date-fns";
+import { useSelector } from "react-redux";
+import { selectUser } from "../store/Reducers/UserSlice";
 
 function VideoWatch() {
+  
   const { videoId } = useParams();
-  const [videoData, setVideoData] = useState([{}]);
-  const [timeAgo, setTimeAgo] = useState("");
-  const [avatar, setAvatar] = useState()
-  const [comments, setComments] = useState([])
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${apiUrl}/videos/getVideo/${videoId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const result = await response.json();
-      setVideoData(result.data);
-      console.log(result.data);
-      setTimeAgo(formatDistanceToNow(new Date(result.data[0].createdAt), { addSuffix: true })); 
-      setAvatar(result.data[0].owner.avatar)
-      setComments(result.data[0].comments)
-    } catch (error) {
-      console.error(error);
-    }
+  const commentUrl = `${apiUrl}/comments/add-comment/${videoId}`;
+  const commentDeleteUrl = `${apiUrl}/comments/delete-comment`;
+  const videoUrl = `${apiUrl}/videos/getVideo/${videoId}`
+  const [data, avatar, videoData, timeAgo, VideoOwnerAvatar, comments,inputs,setInputs,handleClick,DeleteCommnet] =  HandleVideoWatch(commentUrl,videoUrl,commentDeleteUrl)
+  
+  const [delButton, setDelButton] = useState(false)
+  const [CommentIndex , setCommIndex] = useState()
+  const handleDelButton =(e)=>{
+         setDelButton(!delButton)
+         setCommIndex(e)
   }
-
-  useEffect(() => {
-    fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <>
       <div className="w-[70%] flex flex-col gap-2">
@@ -44,8 +30,8 @@ function VideoWatch() {
           <h2 className="text-xl font-medium ml-2">{videoData[0].title}</h2>
           <div className="mt-2 flex items-center justify-between">
             <div className="flex gap-3 items-center">
-              <div className="w-10 h-10 rounded-full">
-                <img className="w-full h-full object-cover" src={avatar} alt="" />
+              <div className="w-10 h-10 rounded-full overflow-hidden">
+                <img className="w-full h-full object-cover" src={VideoOwnerAvatar} alt="" />
               </div>
               <div className="">
                     <h2 className="font-medium">{videoData[0].owner?.fullName}</h2>
@@ -84,35 +70,42 @@ function VideoWatch() {
           </div>
           <p>{videoData[0].description}</p>
         </div>
+        {/* Comments part */}
         <div className="h-[10rem] mt-3">
             <div className="w-full flex gap-2 items-center">
-                <div className="w-10 h-10 rounded-full bg-amber-300">
-                    
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                    <img className="w-full h-full object-cover" src={avatar} alt="" />
                 </div>
                 <div className=" w-full h-10">
-                    <input className="w-full border-b-2 border-[#2f2f2f] pl-1 outline-0" type="text" name="comment" id="" placeholder="Add a comment" />
+                    <input ref={data} onChange={()=>setInputs(data.current.value)} className="w-full border-b-2 border-[#2f2f2f] pl-1 outline-0" type="text" name="comment" id="" placeholder="Add a comment" />
                 </div>
             </div>
             <div className="w-full flex gap-2.5 justify-end items-center">
                 <button className="font-medium px-4 py-1.5  cursor-pointer rounded-full hover:bg-[#2f2f2f]">Cancel</button>
-                <button className="font-medium px-4 py-1.5 cursor-pointer rounded-full bg-[#222222] hover:bg-[#3f3f3f]">Comment</button>
-            </div>
-            <div className="py-6">
+                <button onClick={()=>handleClick()}  className={`font-medium px-4 py-1.5 rounded-full bg-[#222222]  ${inputs ? `opacity-[1] hover:bg-[#3f3f3f] cursor-pointer`:`opacity-[0.4]`}`}>Comment</button>
+            </div>            
+            <div className="py-6 flex flex-col gap-5">
               {comments.map((comment,index)=>
-                  <div key={index} className="w-full flex gap-2">
-                  <div className="w-9 h-9 bg-amber-200 rounded-full">
-                  <img className="w-full h-full object-cover" src={comment.commentedBy.avatar} alt="" />
-                  </div>
-                  <div className="">
-                      <h2 className="font-medium">{comment.commentedBy.fullName}</h2>
-                      <p className="py-1">{comment.content}</p>
-                      <div className="text-2xl text-[#848282] flex gap-1.5">
-                          <assets.BiLike className="cursor-pointer"/>
-                          <assets.BiDislike className="cursor-pointer"/>
+                  <div key={index} className="w-full flex justify-between pr-3">
+                    <div className=" flex gap-3">
+                      <div className="w-9 h-9 mt-1 rounded-full overflow-hidden">
+                        <img className="w-full h-full object-cover" src={comment.commentedBy.avatar} alt="" />
                       </div>
+                      <div className="">
+                          <h2 className="font-medium">{comment.commentedBy.username} {comment.createdAt}</h2>
+                          <p className="py-1">{comment.content}</p>
+                          <div className="text-2xl text-[#848282] flex gap-1.5">
+                              <assets.BiLike className="cursor-pointer"/>
+                              <assets.BiDislike className="cursor-pointer"/>
+                          </div>
+                      </div>
+                    </div>
+                    <div className=" w-24 relative">
+                      <button onClick={()=>DeleteCommnet(index)}  className={`${CommentIndex == index && delButton ? ``:`hidden`} absolute top-1 left-1 px-3 h-8 py-1 bg-[#2f2f2f] rounded-md cursor-pointer hover:bg-[#3f3f3f] text-sm mt-1 `}>delete</button>
+                      <span onClick={()=>handleDelButton(index)} className={`float-right w-8 h-8 rounded-full cursor-pointer text-2xl hover:bg-[#2f2f2f] flex justify-center items-center `}><assets.BiDotsVerticalRounded /></span>
+                    </div>
                   </div>
-              </div>
-              )}  
+               )}  
             </div>
         </div>
       </div>
@@ -121,3 +114,84 @@ function VideoWatch() {
 }
 
 export default VideoWatch;
+
+const HandleVideoWatch =(commentUrl,videoUrl,commentDeleteUrl)=>{
+  const {avatar} = useSelector(selectUser)
+  const [videoData, setVideoData] = useState([{}]);
+  const [timeAgo, setTimeAgo] = useState("");
+  const [VideoOwnerAvatar, setOwnerAvatar] = useState()
+  const [comments, setComments] = useState([])
+
+// fetch Data Video Data
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${videoUrl}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const result = await response.json();
+      setVideoData(result.data);
+      setTimeAgo(formatDistanceToNowStrict(new Date(result.data[0].createdAt), { addSuffix: true })); 
+      setOwnerAvatar(result.data[0].owner.avatar)
+      setComments(result.data[0].comments.map(comment => ({
+        ...comment,
+        createdAt: formatDistanceToNowStrict(new Date(comment.createdAt), { addSuffix: true })
+      })))
+    } catch (error) {
+      console.error(error);
+    }
+  }
+//  add Comments 
+  const data = useRef(null)
+  const [inputs, setInputs] = useState()
+  const handleClick = async()=>{
+    if(inputs){
+     try {
+       const response = await fetch(`${commentUrl}`, {
+         method: 'POST',
+         credentials: 'include',
+         headers: {
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+           content: inputs
+         })
+       });
+       if(response.status==201){
+        console.log("Comment added successfully")
+        data.current.value=''
+        fetchData()
+       }
+     } catch (error) {
+        console.error(error);
+     }
+    }
+  }
+
+  const DeleteCommnet = async(index)=>{
+    try {
+      const response = await fetch(`${commentDeleteUrl}/${comments[index]._id}`, {
+        method: 'delete',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if(response.status==200){
+        console.log("Comment deleted successfully")
+        fetchData()
+       }
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return [data, avatar, videoData, timeAgo, VideoOwnerAvatar, comments,inputs,setInputs,handleClick,DeleteCommnet]
+}
