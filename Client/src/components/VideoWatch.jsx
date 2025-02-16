@@ -8,11 +8,13 @@ import { selectUser } from "../store/Reducers/UserSlice";
 
 function VideoWatch() {
   
+  const { refreshToken } = useSelector(selectUser)
   const { videoId } = useParams();
   const commentUrl = `${apiUrl}/comments/add-comment/${videoId}`;
   const commentDeleteUrl = `${apiUrl}/comments/delete-comment`;
   const videoUrl = `${apiUrl}/videos/getVideo/${videoId}`
-  const [data, avatar, videoData, timeAgo, VideoOwnerAvatar, comments,inputs,setInputs,handleClick,DeleteCommnet] =  HandleVideoWatch(commentUrl,videoUrl,commentDeleteUrl)
+  const likeUrl = `${apiUrl}/likes`
+  const [data, avatar, videoData, timeAgo, VideoOwnerAvatar, comments,inputs,setInputs,handleClick,DeleteCommnet, ToggleLike] =  HandleVideoWatch(commentUrl,videoUrl,commentDeleteUrl,likeUrl)
   
   const [delButton, setDelButton] = useState(false)
   const [CommentIndex , setCommIndex] = useState()
@@ -43,7 +45,7 @@ function VideoWatch() {
             </div>
             <div className="flex gap-3 items-center">
               <div className="h-9 bg-[#222222] rounded-2xl flex text-2xl items-center overflow-hidden">
-                <div className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-[#3f3f3f]">
+                <div onClick={()=>ToggleLike(videoData[0]._id)} className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-[#3f3f3f]">
                   <assets.BiLike /> <span className="text-sm font-medium">{videoData[0].totalLikes}</span>
                 </div>
                 <p className="w-0.5 h-[60%] bg-zinc-500"></p>
@@ -74,14 +76,15 @@ function VideoWatch() {
         <div className="h-[10rem] mt-3">
             <div className="w-full flex gap-2 items-center">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
-                    <img className="w-full h-full object-cover" src={avatar} alt="" />
+                  { refreshToken ? <img className="w-full h-full object-cover" src={avatar} alt="" /> : <assets.IoPersonCircleOutline className="text-3xl" />}
+                    
                 </div>
                 <div className=" w-full h-10">
-                    <input ref={data} onChange={()=>setInputs(data.current.value)} className="w-full border-b-2 border-[#2f2f2f] pl-1 outline-0" type="text" name="comment" id="" placeholder="Add a comment" />
+                    <input ref={data}    onChange={()=>setInputs(data.current.value)} className="w-full border-b-2 border-[#2f2f2f] pl-1 outline-0" type="text" name="comment" id="" placeholder="Add a comment" />
                 </div>
             </div>
             <div className="w-full flex gap-2.5 justify-end items-center">
-                <button className="font-medium px-4 py-1.5  cursor-pointer rounded-full hover:bg-[#2f2f2f]">Cancel</button>
+                <button className="font-medium px-4 py-1.5 cursor-pointer rounded-full hover:bg-[#2f2f2f]">Cancel</button>
                 <button onClick={()=>handleClick()}  className={`font-medium px-4 py-1.5 rounded-full bg-[#222222]  ${inputs ? `opacity-[1] hover:bg-[#3f3f3f] cursor-pointer`:`opacity-[0.4]`}`}>Comment</button>
             </div>            
             <div className="py-6 flex flex-col gap-5">
@@ -115,7 +118,7 @@ function VideoWatch() {
 
 export default VideoWatch;
 
-const HandleVideoWatch =(commentUrl,videoUrl,commentDeleteUrl)=>{
+const HandleVideoWatch =(commentUrl,videoUrl,commentDeleteUrl,likeUrl)=>{
   const {avatar} = useSelector(selectUser)
   const [videoData, setVideoData] = useState([{}]);
   const [timeAgo, setTimeAgo] = useState("");
@@ -187,11 +190,28 @@ const HandleVideoWatch =(commentUrl,videoUrl,commentDeleteUrl)=>{
         console.error(error);
     }
   }
+// Video Like 
+ const ToggleLike = async (videoId)=>{
+   try {
+     const response = await fetch(`${likeUrl}/toggle-video-like/${videoId}`, {
+       method: 'post',
+       credentials: 'include',
+       headers: {
+         'Content-Type': 'application/json',
+       },
+     });
+     if(response.status==200 || response.status== 201){
+       fetchData()
+      }
+   } catch (error) {
+       console.error(error);
+   }
+ }
 
   useEffect(() => {
     fetchData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return [data, avatar, videoData, timeAgo, VideoOwnerAvatar, comments,inputs,setInputs,handleClick,DeleteCommnet]
+  return [data, avatar, videoData, timeAgo, VideoOwnerAvatar, comments,inputs,setInputs,handleClick,DeleteCommnet, ToggleLike]
 }
