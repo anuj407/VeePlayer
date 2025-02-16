@@ -5,6 +5,7 @@ import { apiUrl } from "../utils/constants";
 import {  formatDistanceToNowStrict } from "date-fns";
 import { useSelector } from "react-redux";
 import { selectUser } from "../store/Reducers/UserSlice";
+import SignIn_Message from "../components/SignIn_Message.jsx";
 
 function VideoWatch() {
   
@@ -14,8 +15,40 @@ function VideoWatch() {
   const commentDeleteUrl = `${apiUrl}/comments/delete-comment`;
   const videoUrl = `${apiUrl}/videos/getVideo/${videoId}`
   const likeUrl = `${apiUrl}/likes`
+
+  
   const [data, avatar, videoData, timeAgo, VideoOwnerAvatar, comments,inputs,setInputs,handleClick,DeleteCommnet, ToggleLike] =  HandleVideoWatch(commentUrl,videoUrl,commentDeleteUrl,likeUrl)
   
+  const [signInMsg, setSignInMsg] = useState('')
+
+  const handleLike = (event)=>{
+    event.stopPropagation();
+    if(!refreshToken){
+      if(signInMsg=='Like')
+      {
+        setSignInMsg(0)
+      }
+      else{
+        setSignInMsg('Like')
+      }
+      return
+    }
+    ToggleLike(videoData[0]?._id)
+  }
+  const handleComment = (event)=>{
+    event.stopPropagation();
+    if(!refreshToken){
+      if(signInMsg=='comment')
+      {
+        setSignInMsg(0)
+      }
+      else{
+        setSignInMsg('comment')
+      }
+      return
+    }
+  }
+  console.log(signInMsg)
   const [delButton, setDelButton] = useState(false)
   const [CommentIndex , setCommIndex] = useState()
   const handleDelButton =(e)=>{
@@ -24,7 +57,7 @@ function VideoWatch() {
   }
   return (
     <>
-      <div className="w-[70%] flex flex-col gap-2">
+      <div onClick={()=>setSignInMsg(0)} className="w-[70%] flex flex-col gap-2">
         <div className="w-full h-[35rem] rounded-3xl ">
           <video className="w-full h-full" controls src={videoData[0].videoFile}></video>
         </div>
@@ -43,9 +76,12 @@ function VideoWatch() {
                 Subscribe
               </button>
             </div>
-            <div className="flex gap-3 items-center">
+            <div className="flex gap-3 items-center relative">
+              <div className="w-[14rem] h-[9rem] absolute z-20 top-10">
+                {signInMsg == "Like" && <SignIn_Message title1={"Like this video?"} title={"Sign in to like this Video"}/>}
+              </div>
               <div className="h-9 bg-[#222222] rounded-2xl flex text-2xl items-center overflow-hidden">
-                <div onClick={()=>ToggleLike(videoData[0]._id)} className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-[#3f3f3f]">
+                <div onClick={handleLike} className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-[#3f3f3f]">
                   <assets.BiLike /> <span className="text-sm font-medium">{videoData[0].totalLikes}</span>
                 </div>
                 <p className="w-0.5 h-[60%] bg-zinc-500"></p>
@@ -73,14 +109,17 @@ function VideoWatch() {
           <p>{videoData[0].description}</p>
         </div>
         {/* Comments part */}
-        <div className="h-[10rem] mt-3">
+        <div className="h-[10rem] mt-3 relative">
             <div className="w-full flex gap-2 items-center">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                   { refreshToken ? <img className="w-full h-full object-cover" src={avatar} alt="" /> : <assets.IoPersonCircleOutline className="text-3xl" />}
                     
                 </div>
-                <div className=" w-full h-10">
-                    <input ref={data}    onChange={()=>setInputs(data.current.value)} className="w-full border-b-2 border-[#2f2f2f] pl-1 outline-0" type="text" name="comment" id="" placeholder="Add a comment" />
+                <div className="w-[14rem] h-[9rem] absolute z-20 top-10">
+                  {signInMsg == "comment" && <SignIn_Message title={"Sign in to Continue"}/>}
+                </div>
+                <div  onClick={handleComment} className=" w-full h-10">
+                    <input ref={data} disabled={signInMsg}  onChange={()=>setInputs(data.current.value)} className="w-full border-b-2 border-[#2f2f2f] pl-1 outline-0" type="text" name="comment" id="" placeholder="Add a comment" />
                 </div>
             </div>
             <div className="w-full flex gap-2.5 justify-end items-center">
@@ -163,7 +202,6 @@ const HandleVideoWatch =(commentUrl,videoUrl,commentDeleteUrl,likeUrl)=>{
          })
        });
        if(response.status==201){
-        console.log("Comment added successfully")
         data.current.value=''
         fetchData()
        }
@@ -183,7 +221,6 @@ const HandleVideoWatch =(commentUrl,videoUrl,commentDeleteUrl,likeUrl)=>{
         },
       });
       if(response.status==200){
-        console.log("Comment deleted successfully")
         fetchData()
        }
     } catch (error) {
