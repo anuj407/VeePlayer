@@ -1,20 +1,18 @@
-import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
+import { signOut } from 'firebase/auth'
 import {assets} from '../assets/assets'
 import { auth } from './Firebase'
 import { useEffect, useState,  } from 'react';
 import {useDispatch, useSelector} from "react-redux"
-import { selectUser, setUserData } from '../store/Reducers/UserSlice';
+import { googleSignIn, refreshToken, selectUser } from '../store/Reducers/UserSlice';
 import { apiUrl } from '../utils/constants';
 function Navbar() {
-  
-  const registerUrl = `${apiUrl}/users/register`;
+  const {avatar,fullName,username}= useSelector(selectUser)
   const logoutUrl = `${apiUrl}/users/logout`;
-  const refreshTokenUrl = `${apiUrl}/users/me`;
-  const [avatar,fullName,username,googleSignIn,googleSignOut,token,handleProfile,showMenu]= HandleNavbar(registerUrl, logoutUrl, refreshTokenUrl)
+  const [handleSignIn,googleSignOut,isTokenValid,handleProfile,showMenu]= HandleNavbar(logoutUrl)
   
   return (
     <>
-        <div className="w-screen h-[5rem] -mt-0.5 px-5 bg-black flex justify-between items-center fixed top-0 z-20">
+        <div className="w-screen h-[5rem] -mt-0.5 px-5 bg-black flex justify-between items-center fixed top-0 z-30">
            <div className="flex items-center pl-5">
               <div className="flex items-center gap-1">
                   <img className="w-14" src={assets.logo} alt="" />
@@ -30,21 +28,19 @@ function Navbar() {
            </div>
            
            {/* Before Login  */}
-           <button onClick={()=>googleSignIn()} className={`${token ? `hidden` :`` } w-[6.5rem] h-10 border-2 border-[#3f3f3f] rounded-full hover:bg-[#222222] hover:border-none cursor-pointer flex items-center justify-center gap-1`}>
+           <button onClick={()=>handleSignIn()} className={`${isTokenValid ? `hidden` :`` } w-[6.5rem] h-10 border-2 border-[#3f3f3f] rounded-full hover:bg-[#222222] hover:border-none cursor-pointer flex items-center justify-center gap-1`}>
              <assets.IoPersonCircleOutline className="text-xl"/>
              <span className="text-sm font-medium ">Sign in</span>
            </button>
            {/* After Login  */}
-           <div className={`${token ? `` :`hidden` } h-10 flex items-center justify-center gap-5`}>
+           <div className={`${isTokenValid ? `` :`hidden` } h-10 flex items-center justify-center gap-5`}>
             <button className="w-[7rem] h-[2.4rem] rounded-full bg-[#222222] hover:bg-[#3f3f3f]  cursor-pointer flex items-center justify-center gap-1">
               <span className="text-xl"><assets.BsPlusLg/></span>
               <span className="font-medium">Create</span>
             </button>
             <assets.IoNotificationsSharp className="text-2xl"/>
-            <div onClick={()=>handleProfile()} className="w-[2rem] h-[2rem] rounded-full cursor-pointer overflow-hidden">
-              {
-               <img className='w-full h-full object-cover' src={avatar} alt={avatar}/> 
-              }
+            <div onClick={()=>handleProfile()} className="w-[2rem] h-[2rem] rounded-full cursor-pointer overflow-hidden">              
+               <img className='w-full h-full object-cover' src={avatar} />       
             </div>
            </div>
         </div>
@@ -77,35 +73,13 @@ function Navbar() {
 
 export default Navbar;
 
-const HandleNavbar = (registerUrl, logoutUrl, refreshTokenUrl)=>{
-  const {avatar,fullName,username}= useSelector(selectUser)
-  const googleSignIn = async()=>{
-    try{
-      // Sign in with Google
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const userData = {
-        username: user.uid,
-        fullName: user.displayName,
-        email: user.email,
-        avatar: user.photoURL,
-      };
-    const respose = await fetch(`${registerUrl}`, {
-        method: "POST",
-        credentials: 'include',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData),
-      });
-      console.log(respose);
-      if(respose.status==200){
-        window.location.href = "/profile"
-      }
-    }
-    catch(error){
-      console.error(error);
-    }
-    
+const HandleNavbar = (logoutUrl)=>{
+
+  const dispatch = useDispatch();
+  const {isTokenValid} = useSelector(selectUser)
+
+  const handleSignIn = ()=>{
+       dispatch(googleSignIn(auth))
   }
   const googleSignOut = async()=>{
     try{
@@ -125,40 +99,17 @@ const HandleNavbar = (registerUrl, logoutUrl, refreshTokenUrl)=>{
       console.error(error);
     }
   }
-  const [token,setToken]= useState(false)
+
   const [showMenu,setShowMenu] = useState(false)
-
-  const dispatch = useDispatch();
-
-  const refreshToken = async()=>{
-    try{
-      const response = await fetch(`${refreshTokenUrl}`, {
-        method: "get",
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const data = await response.json();
-      if(response.status==200){
-        dispatch(setUserData({username: data.username,fullName: data.fullName,email: data.email,avatar: data.avatar,refreshToken: data.refreshToken}))
-      }
-      if(data.refreshToken){
-        setToken(true)
-      }
-    }
-    catch(error){
-      console.error(error);
-    }
-  }
-
   const handleProfile = ()=>{
     setShowMenu(!showMenu)
   }
   useEffect(()=>{
-    refreshToken()
+    if(isTokenValid){
+      dispatch(refreshToken())
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]) 
   
-  return [avatar,fullName,username,googleSignIn,googleSignOut,token,handleProfile,showMenu]
+  return [handleSignIn,googleSignOut,isTokenValid,handleProfile,showMenu]
 }
