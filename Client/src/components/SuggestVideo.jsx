@@ -1,11 +1,18 @@
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import Category from "./category"
 import { formatDistanceToNowStrict } from "date-fns"
 import { assets } from "../assets/assets"
+import { fetchVideos, selectVideos } from "../store/Reducers/VideoSlice"
+import { useEffect } from "react"
 
 function SuggestVideo() {
-  const {videos} = useSelector((state) => state.videos)
-  console.log(videos)
+  const dispatch = useDispatch()
+  const {videos,status} = useSelector(selectVideos)
+  useEffect(()=>{
+       if(status === 'idle'){
+          dispatch(fetchVideos())
+       }
+  },[])
   return (
     <>
        <div className="w-[25%] h-full flex flex-col gap-6">
