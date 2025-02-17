@@ -2,6 +2,8 @@
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../utils/constants";
+import { useSelector } from "react-redux";
+import { selectUser } from "../store/Reducers/UserSlice";
 
 function VideoCard({ video }) {
   
@@ -111,9 +113,13 @@ const HandleVideoCard = (urlPath,video)=>{
     setIsPlaying(false);
     videoRef.current.pause();
   };
+
+  const {isTokenValid} = useSelector(selectUser)
   const handleVideoClick = () => {
     navigate(`/watch/${video._id}`);
-    updateViews()
+    if(isTokenValid){
+      updateViews()
+    }
   };
   useEffect(() => {
     const videoElement = videoRef.current;
