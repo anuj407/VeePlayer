@@ -30,5 +30,5 @@ const VideoSlice = createSlice({
       });
   },
 });
-
+export const selectVideos = (state)=>state.videos;
 export default VideoSlice.reducer;
