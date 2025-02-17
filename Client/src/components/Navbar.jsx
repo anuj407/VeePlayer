@@ -1,14 +1,14 @@
-import { signOut } from 'firebase/auth'
 import {assets} from '../assets/assets'
 import { auth } from './Firebase'
 import { useEffect, useState,  } from 'react';
 import {useDispatch, useSelector} from "react-redux"
-import { googleSignIn, refreshToken, selectUser } from '../store/Reducers/UserSlice';
-import { apiUrl } from '../utils/constants';
+import { selectUser } from '../store/Reducers/UserSlice';
+import { googleSignIn, googleSignOut, refreshToken } from '../utils/handleUser';
+
 function Navbar() {
+ 
   const {avatar,fullName,username}= useSelector(selectUser)
-  const logoutUrl = `${apiUrl}/users/logout`;
-  const [handleSignIn,googleSignOut,isTokenValid,handleProfile,showMenu]= HandleNavbar(logoutUrl)
+  const [handleSignIn,handleSignOut,isTokenValid,handleProfile,showMenu]= HandleNavbar()
   
   return (
     <>
@@ -59,7 +59,7 @@ function Navbar() {
             <div className="flex flex-col mt-2">
               <div className="h-10 flex items-center gap-x-2 hover:bg-[#3f3f3f] pl-3">
                 <assets.PiSignInBold className='text-2xl font-thin'/>
-                <button onClick={()=>googleSignOut()} className='w-full text-white cursor-pointer text-start'>Sign out</button>
+                  <button onClick={()=>handleSignOut()} className='w-full text-white cursor-pointer text-start'>Sign out</button>
               </div>
               <div className="h-10 flex items-center gap-x-2 hover:bg-[#3f3f3f] pl-3">
                 <assets.IoSettingsOutline className='text-2xl font-thin'/>
@@ -73,43 +73,25 @@ function Navbar() {
 
 export default Navbar;
 
-const HandleNavbar = (logoutUrl)=>{
-
+const HandleNavbar = ()=>{
   const dispatch = useDispatch();
   const {isTokenValid} = useSelector(selectUser)
 
   const handleSignIn = ()=>{
-       dispatch(googleSignIn(auth))
+        googleSignIn(auth, dispatch)
   }
-  const googleSignOut = async()=>{
-    try{
-      // Sign out from server
-      await fetch(`${logoutUrl}`, {
-        method: "POST",
-        credentials: 'include',
-      });
-  
-      // Sign out from Firebase
-      await signOut(auth).then(()=>{
-        window.location.href = "/";
-      })
-
-    }
-    catch(error){
-      console.error(error);
-    }
+  const handleSignOut= ()=>{
+    googleSignOut(auth)
   }
-
+    
   const [showMenu,setShowMenu] = useState(false)
   const handleProfile = ()=>{
     setShowMenu(!showMenu)
   }
   useEffect(()=>{
-    if(isTokenValid){
-      dispatch(refreshToken())
-    }
+      refreshToken(dispatch)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]) 
   
-  return [handleSignIn,googleSignOut,isTokenValid,handleProfile,showMenu]
+  return [handleSignIn,handleSignOut,isTokenValid,handleProfile,showMenu]
 }
