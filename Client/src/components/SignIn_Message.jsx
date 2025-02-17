@@ -1,14 +1,12 @@
 /* eslint-disable react/prop-types */
 import { auth } from "./Firebase"
-import { useDispatch } from "react-redux"
-import { googleSignIn } from "../store/Reducers/UserSlice"
+import { googleSignIn } from "../utils/handleUser"
 
 function SignIn_Message({title,title1}) {
-  const dispatch = useDispatch()
+
   const handleSignIn = (event) => {
     event.stopPropagation()
-    console.log("Hi")
-    dispatch(googleSignIn(auth))
+    googleSignIn(auth)
   }
   return (
     <>

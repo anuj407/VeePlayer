@@ -2,6 +2,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 import { apiUrl } from "./constants";
 import { setUserData } from "../store/Reducers/UserSlice";
 
+
 const registerUrl = `${apiUrl}/users/register`;
 const refreshTokenUrl = `${apiUrl}/users/me`;
 const logoutUrl = `${apiUrl}/users/logout`;
@@ -20,8 +21,8 @@ const refreshToken =  async (dispatch) => {
                 fullName: data.fullName,
                 email: data.email,
                 avatar: data.avatar,
-                refreshToken: data.refreshToken
-            }))
+                refreshToken: data.refreshToken,
+            }));
         }
     } catch (error) {
         console.error(error);
@@ -76,4 +77,4 @@ const googleSignOut = async(auth)=>{
     }
  }
 
-export { refreshToken, googleSignIn, googleSignOut };
+ export { refreshToken, googleSignIn, googleSignOut };
