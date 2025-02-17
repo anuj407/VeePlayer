@@ -19,8 +19,12 @@ function Home() {
   return (
     <div className="min-h-screen">
         <Navbar/>
-        <Category/>
         <SideBar/>
+         <div className="left-[7vw] h-16 bg-black flex items-center gap-x-8 fixed top-18 z-20">     
+                <div className="w-[92vw] pr-4 flex items-center">                  
+                  <Category/>
+                </div>      
+            </div>
         <div className="w-[91.5vw] py-3 pl-1 mt-32 ml-28 flex flex-wrap gap-4">
         {
           videos.map((video,index)=><VideoCard key={index} index={index} video={video}/>)
