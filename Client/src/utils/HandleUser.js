@@ -50,8 +50,8 @@ const googleSignIn = async (auth,dispatch) => {
         });
 
         if (response.status === 200) {
-            refreshToken(dispatch);
             window.location.href = "/profile";
+            refreshToken(dispatch);
         }
     } catch (error) {
         console.error(error);

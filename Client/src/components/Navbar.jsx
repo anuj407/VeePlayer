@@ -90,7 +90,10 @@ const HandleNavbar = ()=>{
     setShowMenu(!showMenu)
   }
   useEffect(()=>{
+    if(window.location.href !== `http://localhost:5173/`)
+    {
       refreshToken(dispatch)
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]) 
   
