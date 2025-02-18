@@ -1,6 +1,7 @@
 import Home from "./pages/Home"
 import {Routes , Route} from "react-router-dom"
 import Watch from "./pages/Watch"
+import Channel from "./pages/Channel"
 function App() {
 
   return (
@@ -10,6 +11,7 @@ function App() {
       <Route path="/" element={<Home/>} />
       <Route path="/profile" element={<Home/>} />
       <Route path="/watch/:videoId" element={<Watch/>} />
+      <Route path="/channel/:username" element={<Channel/>} />
     </Routes>
     </div>
   )
