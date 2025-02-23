@@ -21,6 +21,6 @@ router.route("/updateCoverImage").patch(
   verifyJwt,
   updateUserCoverImage
 )
-router.route("/c/:username").get(verifyJwt,getUserChannelProfile)
+router.route("/channel/:username").get(verifyJwt,getUserChannelProfile)
 router.route("/history").get(verifyJwt,getWatchHistory)
 export default router;
