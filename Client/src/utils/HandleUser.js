@@ -17,6 +17,7 @@ const refreshToken =  async (dispatch) => {
         const data = await response.json();
         if (response.status === 200) {
             dispatch(setUserData({
+                userId: data._id,
                 username: data.username,
                 fullName: data.fullName,
                 email: data.email,
