@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useEffect, useRef, useState } from "react";
 import { apiUrl } from "../utils/constants";
@@ -9,7 +9,7 @@ import SignIn_Message from "../components/SignIn_Message.jsx";
 
 function VideoWatch() {
   
-  const { isValidToken } = useSelector(selectUser)
+  const { isTokenValid } = useSelector(selectUser)
   const { videoId } = useParams();
   const commentUrl = `${apiUrl}/comments/add-comment/${videoId}`;
   const commentDeleteUrl = `${apiUrl}/comments/delete-comment`;
@@ -23,7 +23,7 @@ function VideoWatch() {
 
   const handleLike = (event)=>{
     event.stopPropagation();
-    if(!isValidToken){
+    if(!isTokenValid){
       if(signInMsg=='Like')
       {
         setSignInMsg(0)
@@ -37,7 +37,7 @@ function VideoWatch() {
   }
   const handleComment = (event)=>{
     event.stopPropagation();
-    if(!isValidToken){
+    if(!isTokenValid){
       if(signInMsg=='comment')
       {
         setSignInMsg(0)
@@ -49,13 +49,17 @@ function VideoWatch() {
     }
     return
   }
-  console.log(signInMsg)
   const [delButton, setDelButton] = useState(false)
   const [CommentIndex , setCommIndex] = useState()
   const handleDelButton =(e)=>{
          setDelButton(!delButton)
          setCommIndex(e)
   }
+ const navigate = useNavigate()
+  const handleProfile = (event)=>{
+    event.stopPropagation();
+    navigate(`/channel/${videoData[0]?.owner?.username}`)
+}
   return (
     <>
       <div onClick={()=>setSignInMsg(0)} className="w-[70%] flex flex-col gap-2">
@@ -66,10 +70,10 @@ function VideoWatch() {
           <h2 className="text-xl font-medium ml-2">{videoData[0].title}</h2>
           <div className="mt-2 flex items-center justify-between">
             <div className="flex gap-3 items-center">
-              <div className="w-10 h-10 rounded-full overflow-hidden">
+              <div onClick={handleProfile} className="w-10 h-10 rounded-full overflow-hidden">
                 <img className="w-full h-full object-cover" src={VideoOwnerAvatar} alt="" />
               </div>
-              <div className="">
+              <div onClick={handleProfile} className="">
                     <h2 className="font-medium">{videoData[0].owner?.fullName}</h2>
                     <p className="text-xs">200 subscribers</p>
               </div>
@@ -79,7 +83,7 @@ function VideoWatch() {
             </div>
             <div className="flex gap-3 items-center relative">
               <div className="w-[14rem] h-[9rem] absolute z-20 top-10">
-                { !isValidToken && (signInMsg == "Like" && <SignIn_Message title1={"Like this video?"} title={"Sign in to like this Video"}/>)}
+                { !isTokenValid && (signInMsg == "Like" && <SignIn_Message title1={"Like this video?"} title={"Sign in to like this Video"}/>)}
               </div>
               <div className="h-9 bg-[#222222] rounded-2xl flex text-2xl items-center overflow-hidden">
                 <div onClick={handleLike} className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-[#3f3f3f]">
@@ -113,11 +117,11 @@ function VideoWatch() {
         <div className="h-[10rem] mt-3 relative">
             <div className="w-full flex gap-2 items-center">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
-                  { !isValidToken ? <img className="w-full h-full object-cover" src={avatar} alt="" /> : <assets.IoPersonCircleOutline className="text-3xl" />}
+                  { !isTokenValid ? <img className="w-full h-full object-cover" src={avatar} alt="" /> : <assets.IoPersonCircleOutline className="text-3xl" />}
                     
                 </div>
                 <div className="w-[14rem] h-[9rem] absolute z-20 top-10">
-                 {isValidToken && (signInMsg == "comment" && <SignIn_Message title={"Sign in to Continue"}/>)}
+                 {isTokenValid && (signInMsg == "comment" && <SignIn_Message title={"Sign in to Continue"}/>)}
                 </div>
                 <div  onClick={handleComment} className=" w-full h-10">
                     <input ref={data} disabled={signInMsg}  onChange={()=>setInputs(data.current.value)} className="w-full border-b-2 border-[#2f2f2f] pl-1 outline-0" type="text" name="comment" id="" placeholder="Add a comment" />
