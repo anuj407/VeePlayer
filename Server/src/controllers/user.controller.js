@@ -218,56 +218,62 @@ const updateUserAccount = asyncHandler(async (req,res)=>{
  })
 // Get User Profile
 const getUserChannelProfile = asyncHandler(async (req,res)=>{
-    const username= req.params.username;
-    if(!username?.trim()){
+    const username= req.params.username
+    const userId = req.query.userId
+    if(!username?.split()){
         throw new apiError('Username is required', 400)
     }
     const channel = await User.aggregate([
         {
-            $match:{username :username}
+            $match: { username: username }
         },
         {
-            $lookup:{
-                from:"Subscription",
-                localField:"_id",
-                foreignField:"channel",
-                as:"subscribers"
+            $lookup: {
+                from: "Subscription",
+                localField: "_id",
+                foreignField: "channel",
+                as: "subscribers"
             }
         },
         {
-            $lookup:{
-                from:"Subscription",
-                localField:"_id",
-                foreignField:"subscriber",
-                as:"subscribedTo"
+            $lookup: {
+                from: "Subscription",
+                localField: "_id",
+                foreignField: "subscriber",
+                as: "subscribedTo"
             }
         },
         {
-            $addFields:{
-                subscribersCount:{$size:"$subscribers"},
-                subscribedToCount:{$size:"$subscribedTo"},
-                isSubscribed:{
-                    $cond:{
-                        if:{$in:[req.user._id,"$subscribers.subscriber"]},
-                        then:true,
-                        else:false
+            $addFields: {
+                subscribersCount: { $size: "$subscribers" },
+                subscribedToCount: { $size: "$subscribedTo" },
+                isSubscribed: {
+                    $cond: {
+                        if: { 
+                            $and: [
+                                { $ne: [userId, null] }, 
+                                { $in: [userId, "$subscribers.subscriber"] } 
+                            ] 
+                        },
+                        then: true,
+                        else: false
                     }
                 }
             }
         },
         {
-            $project:{
-                fullName:1,
-                email:1,
-                avatar:1,
-                coverImage:1,
-                username:1,
-                subscribersCount:1,
-                subscribedToCount:1,
-                isSubscribed:1
+            $project: {
+                fullName: 1,
+                email: 1,
+                avatar: 1,
+                coverImage: 1,
+                username: 1,
+                subscribersCount: 1,
+                subscribedToCount: 1,
+                isSubscribed: 1
             }
         }
-    ])
+    ])   
     if(!channel?.length){
         throw new apiError('User not found', 404)
     }
