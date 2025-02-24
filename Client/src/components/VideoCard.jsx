@@ -2,14 +2,30 @@
 import { useRef, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiUrl } from "../utils/constants";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/Reducers/UserSlice";
+import { fetchProfile } from "../store/Reducers/ChannelSlice";
 
 function VideoCard({ video }) {
   
   const urlPath = `${apiUrl}/videos/views/${video._id}`
   const [handlePlay,handlePause,handleVideoClick,isPlaying,videoRef,progress,duration,currentTime] = HandleVideoCard(urlPath,video)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const {userId} = useSelector(selectUser)
 
+  const params = { username: video.owner.username, userId }
+  const handleProfile = (event)=>{
+        event.stopPropagation();
+        dispatch(fetchProfile(params))
+        navigate(`/channel/${video.owner.username}`)
+  }
+  useEffect(()=>{
+    if(window.location.href== `http://localhost:5173/channel/${params.username}`){
+      dispatch(fetchProfile(params))
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
   return (
     <div
       onClick={handleVideoClick}
@@ -54,7 +70,7 @@ function VideoCard({ video }) {
       {/* Video Details */}
       <div className="w-full self-start">
         <div className="flex gap-2">
-          <div className="w-10 h-10 rounded-full overflow-hidden">
+          <div onClick={handleProfile} className="w-10 h-10 rounded-full overflow-hidden">
             <img
               className="w-full h-full object-cover"
               src={video.owner.avatar}
@@ -64,7 +80,7 @@ function VideoCard({ video }) {
           <div className="w-[78%]">
             <p>{video.title} </p>
             <div className="text-sm text-[#cbcbcb]">
-              <h3>{video.owner.fullName}</h3>
+              <h3 onClick={handleProfile} >{video.owner.fullName}</h3>
               <p>{video.views} views</p>
             </div>
           </div>
