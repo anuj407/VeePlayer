@@ -55,7 +55,7 @@ function Navbar() {
                   <p>{username}</p>
                </div>
             </div>
-            <button onClick={()=>navigate(`/channel/:${username}`)} className="w-full text-blue-400 mt-1.5 text-center cursor-pointer">View your channel</button>
+            <button onClick={()=>navigate(`/channel/${username}`)} className="w-full text-blue-400 mt-1.5 text-center cursor-pointer">View your channel</button>
             <p className="w-full h-[2px] bg-[#3f3f3f] mt-2"></p>
             <div className="flex flex-col mt-2">
               <div className="h-10 flex items-center gap-x-2 hover:bg-[#3f3f3f] pl-3">
