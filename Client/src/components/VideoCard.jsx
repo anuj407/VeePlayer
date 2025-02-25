@@ -78,7 +78,7 @@ function VideoCard({ video }) {
             />
           </div>
           <div className="w-[78%]">
-            <p>{video.title} </p>
+            <p className="text-[1.1rem]" >{video.title} </p>
             <div className="text-sm text-[#cbcbcb]">
               <h3 onClick={handleProfile} >{video.owner.fullName}</h3>
               <p>{video.views} views</p>
