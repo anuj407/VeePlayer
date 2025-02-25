@@ -15,6 +15,12 @@ import { BiLike } from "react-icons/bi";
 import { BiDislike } from "react-icons/bi";
 import { PiShareFat } from "react-icons/pi";
 import { LiaDownloadSolid } from "react-icons/lia";
+import { RxCross2 } from "react-icons/rx";
+import { BiSolidLike } from "react-icons/bi";
+import { BiSolidDislike } from "react-icons/bi";
+import { MdFileUpload } from "react-icons/md";
+import { GoVideo } from "react-icons/go";
+import { TfiWrite } from "react-icons/tfi";
 export const assets ={
     logo,
     FiSearch,
@@ -33,7 +39,13 @@ export const assets ={
     BiDislike,
     PiShareFat,
     LiaDownloadSolid,
- 
+    RxCross2,
+    BiSolidLike,
+    BiSolidDislike,
+    MdFileUpload,
+    GoVideo,
+    TfiWrite,
+    
 }
 
 export const category = [
