@@ -18,7 +18,7 @@ function SuggestVideo() {
         <div className="flex ">
            <Category/>
         </div>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 h-[8rem]">
           {videos.map((video,index)=><HVideoCard key={index} video={video} />)}
         </div>
       </div>
