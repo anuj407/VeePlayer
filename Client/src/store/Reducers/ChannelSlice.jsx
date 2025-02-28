@@ -28,6 +28,7 @@ export const fetchProfile = createAsyncThunk(
   
 
 const initialState = {
+    _id:null,
     fullName: null,
     email: null,
     username: null,
@@ -45,6 +46,7 @@ const ChannelSlice = createSlice({
     initialState,
     reducers: {
         setChannelData: (state, action) => {
+           state._id = action.payload._id;  
            state.fullName = action.payload.fullName;
            state.email = action.payload.email;
            state.username = action.payload.username;
