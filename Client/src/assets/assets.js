@@ -21,6 +21,11 @@ import { BiSolidDislike } from "react-icons/bi";
 import { MdFileUpload } from "react-icons/md";
 import { GoVideo } from "react-icons/go";
 import { TfiWrite } from "react-icons/tfi";
+import { AiFillHome } from "react-icons/ai";
+import { MdOutlineVideoLibrary } from "react-icons/md";
+import { MdPlaylistPlay } from "react-icons/md";
+import { LuHistory } from "react-icons/lu";
+import { MdOutlineWatchLater } from "react-icons/md";
 export const assets ={
     logo,
     FiSearch,
@@ -45,6 +50,11 @@ export const assets ={
     MdFileUpload,
     GoVideo,
     TfiWrite,
+    AiFillHome,
+    MdOutlineVideoLibrary,
+    MdPlaylistPlay,
+    LuHistory,
+    MdOutlineWatchLater,
     
 }
 
