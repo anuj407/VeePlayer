@@ -26,6 +26,8 @@ import { MdOutlineVideoLibrary } from "react-icons/md";
 import { MdPlaylistPlay } from "react-icons/md";
 import { LuHistory } from "react-icons/lu";
 import { MdOutlineWatchLater } from "react-icons/md";
+import { IoIosCheckmarkCircle } from "react-icons/io";
+import { FaCircleDot } from "react-icons/fa6";
 export const assets ={
     logo,
     FiSearch,
@@ -55,6 +57,8 @@ export const assets ={
     MdPlaylistPlay,
     LuHistory,
     MdOutlineWatchLater,
+    IoIosCheckmarkCircle,
+    FaCircleDot,
     
 }
 
