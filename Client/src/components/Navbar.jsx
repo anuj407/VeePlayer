@@ -5,12 +5,29 @@ import {useDispatch, useSelector} from "react-redux"
 import { selectUser } from '../store/Reducers/UserSlice';
 import { googleSignIn, googleSignOut, refreshToken } from '../utils/handleUser';
 import { useNavigate } from 'react-router-dom';
+import VideoUploadPop_up from './VideoUploadPop_up';
 
 function Navbar() {
  
   const {avatar,fullName,username}= useSelector(selectUser)
-  const [handleSignIn,handleSignOut,isTokenValid,handleProfile,showMenu]= HandleNavbar()
+  const [handleSignIn,handleSignOut,isTokenValid]= HandleNavbar()
   const navigate = useNavigate()
+  const [showMenu,setShowMenu] = useState(false)
+  const [createPopUp,setCreatePopUp] = useState(false)
+  const [UploadPopUp,setUploadPopUp] = useState(false)
+
+  const handleProfile = ()=>{
+    setShowMenu(!showMenu)
+    setCreatePopUp(false)
+  }
+  const handleUploadPopUp =()=>{
+    setUploadPopUp(false)
+  }
+  const handleCreateButton=()=>{
+    setCreatePopUp(prev => !prev)
+    setShowMenu(false)
+  }
+
   return (
     <>
         <div className="w-screen h-[5rem] -mt-0.5 px-5 bg-black flex justify-between items-center fixed top-0 z-30">
@@ -35,17 +52,28 @@ function Navbar() {
            </button>
            {/* After Login  */}
            <div className={`${isTokenValid ? `` :`hidden` } h-10 flex items-center justify-center gap-5`}>
-            <button className="w-[7rem] h-[2.4rem] rounded-full bg-[#222222] hover:bg-[#3f3f3f]  cursor-pointer flex items-center justify-center gap-1">
+            <button onClick={handleCreateButton} className="w-[7rem] h-[2.4rem] rounded-full bg-[#222222] hover:bg-[#3f3f3f]  cursor-pointer flex items-center justify-center gap-1">
               <span className="text-xl"><assets.BsPlusLg/></span>
-              <span className="font-medium">Create</span>
+              <span  className="font-medium">Create</span>
             </button>
             <assets.IoNotificationsSharp className="text-2xl"/>
             <div onClick={()=>handleProfile()} className="w-[2rem] h-[2rem] rounded-full cursor-pointer overflow-hidden">              
                <img className='w-full h-full object-cover' src={avatar} />       
             </div>
-           </div>
+           </div> 
         </div>
-        <div className={`${showMenu ? '' :`hidden`} w-[14rem] h-[14rem] bg-[#222222] rounded-xl absolute right-6 top-16 z-50`}>
+          {/* Create Button Pop-Up */}
+          <div className={`${createPopUp ? 'block' : 'hidden'} w-fit h-fit py-2 bg-[#222222] rounded-xl fixed right-20 top-16 z-50`}>
+               <div onClick={()=>setUploadPopUp(prev => !prev)} className="flex gap-2.5 items-center p-3 hover:bg-[#3a3a3a] cursor-pointer">
+                <assets.GoVideo/>
+                <h4>Upload Video</h4>
+               </div>
+               <div className="flex gap-2.5 items-center p-3 hover:bg-[#3a3a3a] cursor-pointer">
+                <assets.TfiWrite/>
+                <h4>Create Post</h4>
+               </div>
+          </div>
+        <div className={`${showMenu ? '' :`hidden`} w-[14rem] h-[14rem] bg-[#222222] rounded-xl fixed right-6 top-16 z-50`}>
             <div className="flex items-center gap-x-2 p-3">
             <div className="w-10 h-10 rounded-full overflow-hidden">
                 <img className="w-full h-full object-cover" src={avatar} alt="" />
@@ -68,6 +96,12 @@ function Navbar() {
               </div>
             </div>
         </div>
+        {/* Upload Pop-Up */}
+          {UploadPopUp &&
+            <div className="w-full h-full bg-[#22222282] flex justify-center items-center overflow-x-hidden z-50 fixed top-0">
+              <VideoUploadPop_up updateParent={handleUploadPopUp}/>
+            </div>
+         }
     </>
   )
 }
@@ -85,10 +119,7 @@ const HandleNavbar = ()=>{
     googleSignOut(auth)
   }
     
-  const [showMenu,setShowMenu] = useState(false)
-  const handleProfile = ()=>{
-    setShowMenu(!showMenu)
-  }
+  
   useEffect(()=>{
     if(window.location.href !== `http://localhost:5173/`)
     {
@@ -97,5 +128,5 @@ const HandleNavbar = ()=>{
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]) 
   
-  return [handleSignIn,handleSignOut,isTokenValid,handleProfile,showMenu]
+  return [handleSignIn,handleSignOut,isTokenValid]
 }
