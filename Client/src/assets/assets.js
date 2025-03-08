@@ -29,6 +29,7 @@ import { MdOutlineWatchLater } from "react-icons/md";
 import { IoIosCheckmarkCircle } from "react-icons/io";
 import { FaCircleDot } from "react-icons/fa6";
 import { FiUpload } from "react-icons/fi";
+import { MdContentCopy } from "react-icons/md";
 export const assets ={
     logo,
     FiSearch,
@@ -61,6 +62,7 @@ export const assets ={
     IoIosCheckmarkCircle,
     FaCircleDot,
     FiUpload,
+    MdContentCopy,
 }
 
 export const category = [
