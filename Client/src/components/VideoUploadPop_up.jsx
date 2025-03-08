@@ -1,11 +1,12 @@
 /* eslint-disable react/prop-types */
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {assets} from "../assets/assets.js"
 import {useDropzone} from 'react-dropzone'
 function VideoUploadPop_up({updateParent}) {
 
   const fileInputRef = useRef(null);
   const [fileName, setFileName] = useState("Select Files");
+  const [videoPath,setVideoPath]=useState()
  //Progress Evaluate
  const [Progress, setProgress]=useState(0)
  const [step , setStep]= useState("Details")
@@ -91,6 +92,7 @@ function VideoUploadPop_up({updateParent}) {
   const handleFileChange = (event) => {
     if (event.target.files.length > 0) {
       setFileName(event.target.files[0].name)
+      setVideoPath(URL.createObjectURL(event.target.files[0]))
       setInterval(()=>{
         setIsUploading(true)
       },1000)
@@ -106,6 +108,26 @@ function VideoUploadPop_up({updateParent}) {
     }
   }, [])
   const {getRootProps, getInputProps} = useDropzone({onDrop})
+  
+  const [alertVisible, setAlertVisible] = useState(false);
+ 
+  const copyText = (text) => {
+    navigator.clipboard.writeText(text)
+      .then(() =>{ setAlertVisible(true)
+      setTimeout(() => setAlertVisible(false), 1000)})
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
+  
+
+  useEffect(() => {
+    const handleBeforeUnload = (event) => {
+      event.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
+
+
   return (
     <>
       <div className={`w-[65vw] xl:w-[62rem] h-[90vh] bg-[#282828] rounded-3xl flex flex-col ${isUploading ? `gap-7` : `gap-12`} overflow-hidden `}>
@@ -151,7 +173,7 @@ function VideoUploadPop_up({updateParent}) {
                   </div>
                 </div>
                 </div>
-                <div className="w-[90%] h-[80%] border z-10 flex gap-4">
+                <div className="w-[90%] h-[80%] z-10 flex gap-4">
                   <div className="w-[65%] h-[100vh] flex flex-col gap-6">
                     <div className="flex justify-between items-center">
                       <h1 className={` text-2xl font-semibold`}>Details</h1>
@@ -172,10 +194,27 @@ function VideoUploadPop_up({updateParent}) {
                       <input className="outline-2" type="file" name="" id="" />
                     </div>
                   </div>
-                  <div className="w-[33%] h-full border">
-                        <div className="w-full h-[14rem] bg-red-500">
-                          <div className="w-full h-[10rem]"></div>
-                          <div className="w-full h-[3.4rem]"></div>
+                  <div className="w-[33%] h-[18rem] bg-[#1f1f1f] mt-10 rounded-xl ">
+                        <div className="w-full h-[18rem] ">
+                          <div className="w-full h-[12rem]">
+                            <video className="w-full h-full" src={videoPath} type="video/mp4" controls></video>
+                          </div>
+                          <div className="w-full h-[5.5rem]">
+                            <div className="h-[50%] text-sm px-2 flex gap-2">
+                              <div className="w-[85%]">
+                                  <h4 className="text-xs text-[#8b8a8a]">Video Link</h4>
+                                  <a href={videoPath} className="inline-block truncate w-full text-[#3da2f9]"> {videoPath}</a>
+                              </div>
+                              <div onClick={()=>copyText(videoPath)} className="w-[12%] flex justify-center items-center cursor-pointer">
+                                <assets.MdContentCopy className="text-2xl"/>
+                              </div>
+                            </div>
+                            <div className="h-[50%]  text-sm px-2">
+                              <h4 className="text-xs text-[#8b8a8a]">Filename</h4>
+                              <h4 className="truncate w-[80%]"> {fileName}</h4>
+                            </div>
+
+                          </div>
                         </div>
                   </div>
                 </div>
@@ -223,6 +262,11 @@ function VideoUploadPop_up({updateParent}) {
             </form> 
           }
       </div>   
+      {alertVisible && (
+        <div className="fixed bottom-5 mx-auto  bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+          ✅ Text Copied!
+        </div>
+      )}
     </>
   )
 }
