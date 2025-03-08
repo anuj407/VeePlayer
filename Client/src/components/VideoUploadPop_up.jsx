@@ -57,6 +57,31 @@ function VideoUploadPop_up({updateParent}) {
       setDescValid(true)
     }
  }
+
+ const handleNext =()=>{
+  if(step == "Details"){
+    HandleSteps("Video")
+  }
+  else if(step == "Video"){
+    HandleSteps("Checks")
+    handleChecks()
+  }
+  else if(step == "Checks"){
+    HandleSteps("Visibility")
+  }
+ }
+ const handleBack =()=>{
+  if(step == "Video"){
+    HandleSteps("Details")
+  }
+  else if(step == "Checks"){
+    HandleSteps("Video")
+  }
+  else if(step == "Visibility"){
+    HandleSteps("Checks")
+  }
+ }
+
   const [isUploading, setIsUploading] = useState(false);
 
   const handleDivClick = () => {
@@ -83,7 +108,7 @@ function VideoUploadPop_up({updateParent}) {
   const {getRootProps, getInputProps} = useDropzone({onDrop})
   return (
     <>
-      <div className={`w-[65vw] h-[90vh] bg-[#282828] rounded-3xl flex flex-col ${isUploading ? `gap-7` : `gap-12`} `}>
+      <div className={`w-[65vw] xl:w-[62rem] h-[90vh] bg-[#282828] rounded-3xl flex flex-col ${isUploading ? `gap-7` : `gap-12`} overflow-hidden `}>
           <div className="h-[8%] border-b border-[#8f8f8f] flex justify-between items-center p-2 px-6 font-medium text-[1.1rem]">
             <h1 className="">{fileName == "Select Files" ? `Upload Video` : `${fileName}`}</h1>
             <div onClick={updateParent} className="text-2xl cursor-pointer">
@@ -91,41 +116,43 @@ function VideoUploadPop_up({updateParent}) {
             </div>
           </div>
           {isUploading ?
-              <div className="flex h-[83%] flex-col items-center gap-y-6 overflow-y-scroll scrollbar-hide relative overflow-x-hidden">
-                <div className="w-[60%] h-[8%] fixed bg-[#282828] z-20">
-                  <div className="w-full  h-full flex justify-between relative">
-                    <div onClick={()=>HandleSteps("Details")} className={`${titleValid ? `text-white` : `text-red-400`} font-medium w-[15%] hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center gap-y-1 z-10`}>
-                      <h1 >Details</h1>
+              <div className="w-[65vw] xl:w-[62rem] flex h-[83%] flex-col items-center gap-y-6 overflow-y-scroll scrollbar-hide relative overflow-x-hidden">
+                <div className="w-full h-[5.5rem]">
+                  <div className="w-[65vw] xl:w-[62rem] h-[5.5rem] fixed bg-[#282828] z-20  flex items-center justify-center">
+                    <div className="w-[55vw] xl:w-[55rem] h-full flex justify-between items-center relative">
+                    <div onClick={()=>HandleSteps("Details")} className={`${titleValid ? `text-white` : `text-red-400`} h-full font-medium w-[20%] hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center relative z-10`}>
+                      <h1 className="absolute w-[7rem] text-center top-0.5">Details</h1>
                       {step == "Details" ? <assets.FaCircleDot className="text-2xl"/> :
                       <assets.IoIosCheckmarkCircle className="text-xl"/>
                       }
                     </div>
-                    <div onClick={()=>HandleSteps("Video")} className={`${Progress >= 1  ? `text-[#b0adad]` :`text-[#575656]`} font-medium w-[15%] hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center gap-y-1 z-10`}>
-                      <h1>Video Element</h1>
-                      {step == "Video" ? <assets.FaCircleDot className="text-2xl"/> :
+                      <div className={`w-[25%] h-[2px] ${Progress >= 1  ? `bg-[#b0adad]` :`bg-[#8c8b8b80]`} absolute left-[11%]`}></div>
+                    <div onClick={()=>HandleSteps("Video")} className={`${Progress >= 1  ? `text-[#b0adad]` :`text-[#575656]`} font-medium w-[20%] h-full hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center z-10 relative`}>
+                      <h1 className="absolute w-[7rem] text-center top-0.5">Video Element</h1>
+                      {step == "Video" ? <assets.FaCircleDot className="text-2xl mt-[1%]"/> :
                       <assets.FaCircleDot className="text-xl"/>
                       }
                     </div>
-                    <div onClick={()=>handleChecks()} className={`${checks ? `text-[#b0adad]` :`text-[#575656]`} font-medium w-[15%] hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center gap-y-1 z-10`}>
-                      <h1>Checks</h1>
+                      <div className={`w-[25%] h-[2px] ${Progress >= 2 ? `bg-[#b0adad]` :`bg-[#8c8b8b80]`}  absolute left-[37.5%]`}></div>
+                    <div onClick={()=>handleChecks()} className={`${checks ? `text-[#b0adad]` :`text-[#575656]`}  font-medium w-[20%] h-full hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center relative z-10`}>
+                      <h1 className="absolute w-[7rem] text-center top-0.5">Checks</h1>
                       {checks ? <assets.IoIosCheckmarkCircle className="text-2xl"/> :
                       <assets.FaCircleDot className={`${step == "Checks" ?`text-2xl` : `text-xl`}`}/>
                       }
                     </div>
-                    <div onClick={()=>HandleSteps("Visibility")} className={`${Progress >= 3  ? `text-[#b0adad]` :`text-[#575656]`} font-medium w-[15%] hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center gap-y-1 z-10`}>
-                      <h1>Visibility</h1>
+                      <div className={`w-[25%] h-[2px] ${Progress >= 3 ? `bg-[#b0adad]` :`bg-[#8c8b8b80]`}  absolute left-[64%]`}></div>
+                    <div onClick={()=>HandleSteps("Visibility")} className={`${Progress >= 3  ? `text-[#b0adad]` :`text-[#575656]`} font-medium w-[20%] h-full hover:bg-[#3f3f3fab] cursor-pointer flex flex-col items-center justify-center relative z-10`}>
+                      <h1 className="absolute w-[7rem] text-center top-0.5">Visibility</h1>
                       {step == "Visibility" ? <assets.FaCircleDot className="text-2xl"/> :
                       <assets.FaCircleDot className={"text-xl"}/>
                       }
                     </div>
-                    <div className={`w-[27%] h-[2px] ${Progress >= 1  ? `bg-[#b0adad]` :`bg-[#8c8b8b80]`} absolute left-[8%] top-[70%] z-0`}></div>
-                    <div className={`w-[27%] h-[2px] ${Progress >= 2 ? `bg-[#b0adad]` :`bg-[#8c8b8b80]`} absolute left-[36.5%] top-[70%] z-0`}></div>
-                    <div className={`w-[27%] h-[2px] ${Progress >= 3 ? `bg-[#b0adad]` :`bg-[#8c8b8b80]`} absolute left-[65%] top-[70%] z-0`}></div>
 
                   </div>
                 </div>
-                <div className="w-[90%] min-h-[90%] mt-[8%]">
-                  <div className="w-[65%] h-full flex flex-col gap-6">
+                </div>
+                <div className="w-[90%] h-[80%] border z-10 flex gap-4">
+                  <div className="w-[65%] h-[100vh] flex flex-col gap-6">
                     <div className="flex justify-between items-center">
                       <h1 className={` text-2xl font-semibold`}>Details</h1>
                       <button className="px-3 py-1 rounded-2xl bg-[#3f3f3f]">Reuse details</button>
@@ -145,15 +172,24 @@ function VideoUploadPop_up({updateParent}) {
                       <input className="outline-2" type="file" name="" id="" />
                     </div>
                   </div>
-                  <div className=""></div>
+                  <div className="w-[33%] h-full border">
+                        <div className="w-full h-[14rem] bg-red-500">
+                          <div className="w-full h-[10rem]"></div>
+                          <div className="w-full h-[3.4rem]"></div>
+                        </div>
+                  </div>
                 </div>
-                <div className="w-[65.5%] h-[7%] bottom-[5%] fixed border-t-[1px] border-[#8f8f8f] flex justify-between items-center">
+                <div className="w-[65vw] xl:w-[62rem] h-[7%] bottom-[5%] px-2 fixed border-t-[1px] border-[#8f8f8f] bg-[#282828] flex justify-between items-center z-20 rounded-b-3xl">
                   <div className="ml-4">
                   icons
                   </div>
-                  <div className="w-[15%] flex justify-evenly items-center">
-                    <button className={`${step == "Details" ? `hidden` : `block`} px-3 py-1.5 bg-[#3f3f3f] text-white font-medium text-sm rounded-2xl cursor-pointer`}>Back</button>
-                    <button className="px-3 py-1.5 bg-white text-black font-medium text-sm rounded-2xl cursor-pointer">Next</button>
+                  <div className="w-[10rem] flex items-center px-2">
+                    <div className="w-[45%]">
+                      <button onClick={()=>handleBack()} className={`${step == "Details" ? `hidden` : `block`} w-[4rem] float-left px-3 py-1.5 bg-[#3f3f3f] text-white font-medium text-sm rounded-2xl cursor-pointer`}>Back</button>
+                    </div>
+                    <div className="w-[45%]">
+                      <button onClick={()=>handleNext()} className={`${step == "Visibility" ? `hidden` : `block`} w-[4rem] ml-3 px-3 py-1.5 bg-white text-black font-medium text-sm rounded-2xl cursor-pointer`}>Next</button>
+                    </div>
                   </div>
                 </div>
               </div>
