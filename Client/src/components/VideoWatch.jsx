@@ -87,7 +87,7 @@ function VideoWatch() {
               </div>
               <div className="h-9 bg-[#222222] rounded-2xl flex text-2xl items-center overflow-hidden">
                 <div onClick={handleLike} className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-[#3f3f3f]">
-                  <assets.BiLike /> <span className="text-sm font-medium">{videoData[0].totalLikes}</span>
+                  {<assets.BiLike />} <span className="text-sm font-medium">{videoData[0].totalLikes}</span>
                 </div>
                 <p className="w-0.5 h-[60%] bg-zinc-500"></p>
                 <div className="cursor-pointer h-full px-3 flex items-center hover:bg-[#3f3f3f]">
@@ -117,7 +117,7 @@ function VideoWatch() {
         <div className="h-[10rem] mt-3 relative">
             <div className="w-full flex gap-2 items-center">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
-                  { !isTokenValid ? <img className="w-full h-full object-cover" src={avatar} alt="" /> : <assets.IoPersonCircleOutline className="text-3xl" />}
+                  { isTokenValid ? <img className="w-full h-full object-cover" src={avatar} alt="" /> : <assets.IoPersonCircleOutline className="text-3xl" />}
                     
                 </div>
                 <div className="w-[14rem] h-[9rem] absolute z-20 top-10">
