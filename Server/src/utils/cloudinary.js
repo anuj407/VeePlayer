@@ -16,7 +16,7 @@ const uploadOnCloudinary = async (localFilePath) => {
 
     // Determine the resource type based on file extension
     const fileExtension = localFilePath.split('.').pop().toLowerCase();
-    const resourceType = ["mp4", "mkv", "avi", "mov"].includes(fileExtension)
+    const resourceType = ["mp4", "mkv", "avi", "mov","webm"].includes(fileExtension)
       ? "video"
       : ["jpg", "jpeg", "png", "gif", "webp"].includes(fileExtension)
       ? "image"
