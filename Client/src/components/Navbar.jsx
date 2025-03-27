@@ -99,7 +99,7 @@ function Navbar() {
         {/* Upload Pop-Up */}
           {UploadPopUp &&
             <div className="w-full h-full bg-[#22222282] flex justify-center items-center overflow-x-hidden z-50 fixed top-0">
-              <VideoUploadPop_up updateParent={handleUploadPopUp}/>
+              <VideoUploadPop_up closePopUp={handleUploadPopUp}/>
             </div>
          }
     </>
