@@ -12,8 +12,8 @@ const PublishedVideo = asyncHandler(async (req, res)=>{
     if(!title || !description){
         throw new apiError("Title and description are required",400)
     }
-    const videoLocalPath = req.files?.videoFile[0]?.path
-    const thumbnailLocalPath = req.files?.thumbnail[0]?.path
+    const videoLocalPath = req.files?.videoFile?.[0].path
+    const thumbnailLocalPath = req.files?.thumbnail?.[0].path
     if(!videoLocalPath){
         throw new apiError("Video is required",400)
     }
