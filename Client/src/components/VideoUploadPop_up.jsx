@@ -2,11 +2,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {assets} from "../assets/assets.js"
 import {useDropzone} from 'react-dropzone'
+import { apiUrl } from "../utils/constants.jsx";
 function VideoUploadPop_up({updateParent}) {
 
   const fileInputRef = useRef(null);
   const [fileName, setFileName] = useState("Select Files");
   const [videoPath,setVideoPath]=useState()
+  const [video , setVideo] = useState()
  //Progress Evaluate
  const [Progress, setProgress]=useState(0)
  const [step , setStep]= useState("Details")
@@ -46,6 +48,7 @@ function VideoUploadPop_up({updateParent}) {
        setTitleValid(true)
     }
  }
+ //Description Input
  const [descValid,setDescValid]=useState(true)
  const [descSize,setDescSize]=useState(0)
  const DescinputRef = useRef(null)
@@ -59,6 +62,12 @@ function VideoUploadPop_up({updateParent}) {
     }
  }
 
+ //Thumbnail Input
+ const [thumbFilePath,setThumbnailFilePath]=useState('')
+ const thumbRef = useRef(null)
+ const HandleThumbnail = (event)=>{
+   setThumbnailFilePath(event.target.files[0])
+ }
  const handleNext =()=>{
   if(step == "Details"){
     HandleSteps("Video")
@@ -92,6 +101,7 @@ function VideoUploadPop_up({updateParent}) {
   const handleFileChange = (event) => {
     if (event.target.files.length > 0) {
       setFileName(event.target.files[0].name)
+      setVideo(event.target.files[0])
       setVideoPath(URL.createObjectURL(event.target.files[0]))
       setInterval(()=>{
         setIsUploading(true)
@@ -118,6 +128,31 @@ function VideoUploadPop_up({updateParent}) {
       .catch((err) => console.error("Failed to copy: ", err));
   };
   
+// Handle Upload 
+const handleUpload = async () => {
+  const formData = new FormData();
+  formData.append('videoFile', video);               
+  formData.append('thumbnail', thumbFilePath);       
+  formData.append('title', fileName);             
+  formData.append('description', DescinputRef.current.value); 
+
+  try {
+    const response = await fetch(`${apiUrl}/videos/uploadVideo`, {
+      method: "POST",
+      credentials: "include",       
+      body: formData                  
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to upload');
+    }
+
+    const data = await response.json();
+    console.log('Video Upload Success:', data);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -191,7 +226,7 @@ function VideoUploadPop_up({updateParent}) {
                     </div>
                     <div className="">
                       <h1>Thumbnail</h1>
-                      <input className="outline-2" type="file" name="" id="" />
+                      <input className="outline-2" onChange={HandleThumbnail} ref={thumbRef} type="file" name="" id="" />
                     </div>
                   </div>
                   <div className="w-[33%] h-[18rem] bg-[#1f1f1f] mt-10 rounded-xl ">
@@ -228,6 +263,7 @@ function VideoUploadPop_up({updateParent}) {
                     </div>
                     <div className="w-[45%]">
                       <button onClick={()=>handleNext()} className={`${step == "Visibility" ? `hidden` : `block`} w-[4rem] ml-3 px-3 py-1.5 bg-white text-black font-medium text-sm rounded-2xl cursor-pointer`}>Next</button>
+                      <button onClick={()=>handleUpload()} className={`${step == "Visibility" ? `block` : `hidden`} w-[4.5rem] text-center ml-3 px-3 py-1.5 bg-white text-black font-medium text-sm rounded-2xl cursor-pointer`}>Upload</button>
                     </div>
                   </div>
                 </div>
