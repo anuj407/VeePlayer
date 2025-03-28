@@ -38,7 +38,11 @@ function Home() {
         </div>
         <div className={`py-3 pl-1 mt-32 ${fullSideBar ? `ml-[16%]` :`ml-[5.8rem]`} flex flex-wrap gap-4`}>
         {
-          videos?.map((video,index)=><VideoCard key={index} index={index} video={video}/>)
+          videos?.map((video,index)=>
+          <div key={index} className="w-[24%] h-[18rem]">
+            <VideoCard index={index} video={video}/>
+          </div>
+        )
         }
         </div>
     </div>

@@ -5,7 +5,7 @@ import { apiUrl } from "../utils/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../store/Reducers/UserSlice";
 import { fetchProfile } from "../store/Reducers/ChannelSlice";
-
+import { assets } from "../assets/assets";
 function VideoCard({ video }) {
   
   const urlPath = `${apiUrl}/videos/views/${video._id}`
@@ -31,10 +31,10 @@ function VideoCard({ video }) {
       onClick={handleVideoClick}
       onMouseEnter={handlePlay}
       onMouseLeave={handlePause}
-      className="w-[20.5rem] cursor-pointer flex flex-col gap-2 items-center rounded-xl overflow-hidden"
+      className="w-full h-full cursor-pointer flex flex-col gap-2 items-center rounded-xl overflow-hidden"
     >
       {/* Video Container */}
-      <div className="w-full h-[12rem] rounded-xl relative overflow-hidden z-10">
+      <div className="w-full h-[58%] rounded-xl relative overflow-hidden z-10">
         {/* Thumbnail (Hidden when playing) */}
         <img
           className={`${isPlaying ? "hidden" : ""} ${
@@ -68,20 +68,27 @@ function VideoCard({ video }) {
       </div>
 
       {/* Video Details */}
-      <div className="w-full self-start">
-        <div className="flex gap-2">
-          <div onClick={handleProfile} className="w-10 h-10 rounded-full overflow-hidden">
-            <img
-              className="w-full h-full object-cover"
-              src={video.owner.avatar}
-              alt=""
-            />
+      <div className="w-full h-[42%] self-start">
+        <div className="flex w-full">
+          <div className="w-[20%]">
+            <div onClick={handleProfile} className="w-10 h-10 rounded-full overflow-hidden">
+              <img
+                className="w-full h-full object-cover"
+                src={video.owner.avatar}
+                alt=""
+              />
+            </div>
           </div>
-          <div className="w-[78%]">
-            <p className="text-[1.1rem]" >{video.title} </p>
+          <div className="w-[80%] flex">
+            <div className="w-[92%]">
+            <p className="text-[1.1rem] w-full overflow-hidden text-ellipsis" >{video.title} </p>
             <div className="text-sm text-[#cbcbcb]">
               <h3 onClick={handleProfile} >{video.owner.fullName}</h3>
               <p>{video.views} views</p>
+            </div>
+            </div>
+            <div className="w-[8%]">
+                <assets.BiDotsVerticalRounded className="text-xl"/>
             </div>
           </div>
         </div>

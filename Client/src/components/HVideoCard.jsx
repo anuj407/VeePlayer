@@ -27,7 +27,7 @@ function HVideoCard({video}) {
          onMouseEnter={handlePlay}
          onMouseLeave={handlePause}
          className="cursor-pointer w-full h-full px-1 py-2 rounded-xl text-sm flex items-center gap-3">
-            <div className="w-[50%]  h-full rounded-md relative overflow-hidden">
+            <div className="w-[50%] h-full rounded-md relative overflow-hidden">
               {video.thumbnail &&             
                 <img  className={`${isPlaying ? "hidden" : ""} ${
                   video.thumbnail ? "" : "hidden"
@@ -54,13 +54,13 @@ function HVideoCard({video}) {
                   </div>
               }
             </div>
-            <div className="h-full flex flex-col justify-between">
+            <div className="h-full w-[47%] flex flex-col justify-between">
                 <div className="h-fit w-full flex justify-between">
-                  <div className=" flex flex-col gap-1">
-                      <div className="self-start text-[1rem] h-4/7">{video.title}</div>
+                  <div className=" flex w-[90%] flex-col gap-1">
+                      <div className="self-start w-full text-[1rem] h-4/7 overflow-hidden text-ellipsis">{video.title}</div>
                       <h4 className="text-sm text-[#a1a1a1]">{video.owner?.fullName}</h4>
                   </div>
-                  <div className="">
+                  <div className="w-[10%]">
                         <assets.BiDotsVerticalRounded className="text-xl"/>
                   </div>
                 </div>
