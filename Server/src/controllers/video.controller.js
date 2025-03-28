@@ -113,6 +113,30 @@ const getAllVideos = asyncHandler(async (req, res) => {
     const videos = await Video.aggregate([
         {
            $match:{owner: new mongoose.Types.ObjectId(userId)}
+        },
+        {
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"ownerInfo",
+                pipeline:[
+                    {
+                        $project:{
+                            fullName:1,
+                            username:1,
+                            avatar:1                       
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields:{
+                owner:{
+                    $first: "$ownerInfo"
+                }
+            }
         }   
     ])
     if(!videos){
