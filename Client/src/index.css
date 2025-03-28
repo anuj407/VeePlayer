@@ -13,3 +13,11 @@ body{
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+.animate-infinite{
+ animation: animateX 1s ease-in-out infinite;
+ background-color: white;
+}
+@keyframes animateX {
+  0% { transform: translateX(-130%); }
+  100% { transform: translateX(130%); }
+}
