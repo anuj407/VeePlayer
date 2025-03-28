@@ -16,7 +16,7 @@ function HVideoCard({video}) {
   const {userId} = useSelector(selectUser)
   const params = { username: video.owner.username, userId }
   useEffect(()=>{
-      if(window.location.href== `http://localhost:5173/channel/${params.username}`){
+      if(window.location.href== `http://localhost:5173/profile/${params.username}`){
         dispatch(fetchProfile(params))
       }
     },[])
@@ -102,7 +102,7 @@ const HandleHVideoCard = (urlPath,video)=>{
      }
    }
   const handlePlay = () => {    
-    if(window.location.href == `http://localhost:5173/profile`){
+    if(window.location.href == `http://localhost:5173/home`){
         updateViews()   
     }
     setIsPlaying(true);

@@ -51,7 +51,7 @@ const googleSignIn = async (auth,dispatch) => {
         });
 
         if (response.status === 200) {
-            window.location.href = "/profile";
+            window.location.href = "/home";
             refreshToken(dispatch);
         }
     } catch (error) {
