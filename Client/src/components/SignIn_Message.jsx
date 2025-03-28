@@ -10,10 +10,10 @@ function SignIn_Message({title,title1}) {
   }
   return (
     <>
-       <div className="w-full h-full p-3 bg-black text-white flex flex-col justify-between">
-        <p className="text-sm pt-1">{title1 || " "} </p>
-        <p className="text-sm">{title}</p>
-        <button onClick={handleSignIn} className="text-blue-500 w-fit px-1 py-1 cursor-pointer">Sign In</button>
+       <div className="w-full h-full bg-black py-3 text-white flex flex-col justify-between">
+          <p className="text-sm pt-1 h-[33%] px-3">{title1 || " "} </p>
+          <p className="text-sm h-[33%] px-3">{title}</p>
+          <button onClick={handleSignIn} className="text-blue-500 w-full h-[33%] px-2 py-1 cursor-pointer text-start hover:bg-[#222222]">Sign In</button>
        </div>
     </>
   )
