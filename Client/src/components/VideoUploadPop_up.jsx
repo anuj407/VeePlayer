@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {assets} from "../assets/assets.js"
 import {useDropzone} from 'react-dropzone'
 import { apiUrl } from "../utils/constants.jsx";
-function VideoUploadPop_up({updateParent}) {
+function VideoUploadPop_up({closePopUp}) {
 
   const fileInputRef = useRef(null);
   const [fileName, setFileName] = useState("Select Files");
@@ -94,7 +94,7 @@ function VideoUploadPop_up({updateParent}) {
 
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleDivClick = () => {
+  const handleVideoSelect = () => {
     fileInputRef.current.click();
   };
 
@@ -127,9 +127,12 @@ function VideoUploadPop_up({updateParent}) {
       setTimeout(() => setAlertVisible(false), 1000)})
       .catch((err) => console.error("Failed to copy: ", err));
   };
-  
+// Loading
+  const [loading,setLoading] = useState(false)
 // Handle Upload 
+const [uploaded, setUploaded] = useState(false)
 const handleUpload = async () => {
+  setLoading(true)
   const formData = new FormData();
   formData.append('videoFile', video);               
   formData.append('thumbnail', thumbFilePath);       
@@ -148,7 +151,11 @@ const handleUpload = async () => {
     }
 
     const data = await response.json();
-    console.log('Video Upload Success:', data);
+    if(data.status == 201){
+      closePopUp()
+      setUploaded(true)
+      setLoading(false)
+    }
   } catch (error) {
     console.error('Error:', error);
   }
@@ -165,13 +172,23 @@ const handleUpload = async () => {
 
   return (
     <>
+     {/* Top header  */}
       <div className={`w-[65vw] xl:w-[62rem] h-[90vh] bg-[#282828] rounded-3xl flex flex-col ${isUploading ? `gap-7` : `gap-12`} overflow-hidden `}>
-          <div className="h-[8%] border-b border-[#8f8f8f] flex justify-between items-center p-2 px-6 font-medium text-[1.1rem]">
+          <div className="h-[4rem]">
+          <div className="h-[90%] border-b border-[#8f8f8f] flex justify-between items-center p-2 px-6 font-medium text-[1.1rem]">
             <h1 className="">{fileName == "Select Files" ? `Upload Video` : `${fileName}`}</h1>
-            <div onClick={updateParent} className="text-2xl cursor-pointer">
+            <div onClick={closePopUp} className="text-2xl cursor-pointer">
                 <assets.RxCross2 />
             </div>
           </div>
+          {/* Loading  */}
+          {loading &&
+              <div className="w-full h-1 bg-[#818080] relative">
+                <div className="w-[80%] h-[100%] absolute  animate-infinite"></div>
+              </div>
+          }
+          </div>
+          {/* Main Part  */}
           {isUploading ?
               <div className="w-[65vw] xl:w-[62rem] flex h-[83%] flex-col items-center gap-y-6 overflow-y-scroll scrollbar-hide relative overflow-x-hidden">
                 <div className="w-full h-[5.5rem]">
@@ -269,10 +286,11 @@ const handleUpload = async () => {
                 </div>
               </div>
            :
+          //  Select Video -> first step 
             <form className="h-4/5 flex flex-col items-center justify-center gap-7">
               <div {...getRootProps()}
                 className="w-[13rem] h-[13rem] flex justify-center items-center cursor-pointer rounded-full bg-[#2e2e2e]"
-                onClick={handleDivClick}
+                onClick={handleVideoSelect}
               >
                 <input {...getInputProps()} />
                 <assets.MdFileUpload className="text-[6rem]" />
@@ -290,7 +308,7 @@ const handleUpload = async () => {
                 <button
                   type="button"
                   className="bg-white text-black px-6 text-[1.1rem] font-medium py-[5px] cursor-pointer rounded-md"
-                  onClick={handleDivClick}
+                  onClick={handleVideoSelect}
                 >
                   {fileName}
                 </button>
@@ -298,9 +316,15 @@ const handleUpload = async () => {
             </form> 
           }
       </div>   
+      {/* Pop-Up Message  */}
       {alertVisible && (
         <div className="fixed bottom-5 mx-auto  bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
           ✅ Text Copied!
+        </div>
+      )}
+      {uploaded && (
+        <div className="fixed bottom-5 mx-auto  bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+          ✅ Video Upload Successfully!
         </div>
       )}
     </>
