@@ -1,14 +1,17 @@
 import { useSelector } from "react-redux"
-import { selectVideos } from "../store/Reducers/VideoSlice.jsx"
 import VideoCard from "./VideoCard.jsx"
 function Channel_HomeVideo() {
-  const {videos}= useSelector(selectVideos)
+  const userVideos = useSelector((state) => state.userVideos.videos);
   return (
     <>
        <div className="">
         <h1 className="text-xl font-semibold" >Videos</h1>
-        <div className="flex mt-2">
-           {videos.map((video,index)=><VideoCard key={index} video={video}/>)}
+        <div className="flex flex-wrap gap-3 gap-y-5 mt-2">
+           {userVideos.map((video,index)=>
+           <div key={index} className="w-[19%] h-[14rem]">
+             <VideoCard video={video}/>
+           </div>
+           )}
         </div>
        </div>
     </>
