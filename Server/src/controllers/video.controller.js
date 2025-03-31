@@ -166,6 +166,24 @@ const getVideoById = asyncHandler(async (req, res) => {
             }
         },
         {
+            $addFields: {
+                isLiked: {
+                    $gt: [
+                        {
+                            $size: {
+                                $filter: {
+                                    input: "$likes",
+                                    as: "like",
+                                    cond: { $eq: ["$$like.likedBy", req.user?._id] }
+                                }
+                            }
+                        },
+                        0
+                    ]
+                }
+            }
+        },
+        {
             $lookup: {
                 from: "comments",
                 localField: "_id",
@@ -222,7 +240,8 @@ const getVideoById = asyncHandler(async (req, res) => {
                 createdAt: 1,
                 owner: 1,
                 totalLikes: 1,
-                comments: 1 
+                comments: 1 ,
+                isLiked: 1
             }
         }
     ]);
