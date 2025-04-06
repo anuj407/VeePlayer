@@ -80,17 +80,48 @@ const getLikedVideos = asyncHandler (async(req, res)=>{
 
     const LikedVideos = await Like.aggregate([
         {
-           $match:{likedBy: req.user._id}
+            $match: { likedBy: req.user._id }
         },
         {
-           $lookup:{
-             from:"videos",
-             localField:"video",
-             foreignField:"_id",
-             as:"video"
-           }
+            $lookup: {
+                from: "videos",
+                localField: "video",
+                foreignField: "_id",
+                as: "video"
+            }
+        },
+        {
+            $addFields: {
+                video: { $arrayElemAt: ["$video", 0] }
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "video.owner",
+                foreignField: "_id",
+                as: "ownerInfo"
+            }
+        },
+        {
+            $addFields: {
+                ownerInfo: { $arrayElemAt: ["$ownerInfo", 0] }
+            }
+        },
+        {
+            $project: {
+                _id: "$video._id",
+                title: "$video.title",        
+                description: "$video.description",
+                createdAt: "$video.createdAt",
+                owner: "$ownerInfo",
+                videoFile: "$video.videoFile",
+                thumbnail: "$video.thumbnail",
+                views: "$video.views",
+            }
         }
-    ])
+    ]);
+    
     if(!LikedVideos){
         throw new apiError("No liked videos found",404)
     }
