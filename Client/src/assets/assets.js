@@ -30,6 +30,7 @@ import { IoIosCheckmarkCircle } from "react-icons/io";
 import { FaCircleDot } from "react-icons/fa6";
 import { FiUpload } from "react-icons/fi";
 import { MdContentCopy } from "react-icons/md";
+import { RiErrorWarningLine } from "react-icons/ri";
 export const assets ={
     logo,
     FiSearch,
@@ -63,6 +64,7 @@ export const assets ={
     FaCircleDot,
     FiUpload,
     MdContentCopy,
+    RiErrorWarningLine
 }
 
 export const category = [
