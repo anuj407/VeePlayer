@@ -1,11 +1,11 @@
 import {Router} from "express"
 import { changePassword, getUserChannelProfile, getCurrentUserProfile, getWatchHistory, logoutUser, refreshAccessToken, updateUserAccount, updateUserAvatar, updateUserCoverImage, SignInUser, AccessRefreshToken } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
-import { verifyJwt } from "../middlewares/auth.middleware.js";
+import { checkToken, verifyJwt, verifyOptionalJwt } from "../middlewares/auth.middleware.js";
 const router = Router()
 
 router.route("/register").post(SignInUser)
-router.route("/me").get(AccessRefreshToken)
+router.route("/me").get(checkToken,AccessRefreshToken)
 router.route("/logout").post(verifyJwt, logoutUser)
 router.route("/refresh-token").post(refreshAccessToken)
 router.route("/change-password").post(verifyJwt, changePassword)
