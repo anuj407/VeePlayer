@@ -9,12 +9,12 @@ import { selectUser } from "../store/Reducers/UserSlice"
 import { useNavigate } from "react-router-dom"
 import { apiUrl } from "../utils/constants"
 
-function HVideoCard({video}) {
+function HVideoCard({video,large=false}) {
   const urlPath = `${apiUrl}/videos/views/${video._id}`
   const [handlePlay,handlePause,handleVideoClick,isPlaying,videoRef,progress,duration,currentTime] = HandleHVideoCard(urlPath,video)
   const dispatch = useDispatch()
   const {userId} = useSelector(selectUser)
-  const params = { username: video.owner.username, userId }
+  const params = { username: video.owner?.username, userId }
   useEffect(()=>{
       if(window.location.href== `http://localhost:5173/profile/${params.username}`){
         dispatch(fetchProfile(params))
@@ -27,7 +27,7 @@ function HVideoCard({video}) {
          onMouseEnter={handlePlay}
          onMouseLeave={handlePause}
          className="cursor-pointer w-full h-full px-1 py-2 rounded-xl text-sm flex items-center gap-3">
-            <div className="w-[50%] h-full rounded-md relative overflow-hidden">
+            <div className={`${large ?`w-[40%]`:`w-[50%]`} h-full rounded-md relative overflow-hidden`}>
               {video.thumbnail &&             
                 <img  className={`${isPlaying ? "hidden" : ""} ${
                   video.thumbnail ? "" : "hidden"
@@ -54,7 +54,7 @@ function HVideoCard({video}) {
                   </div>
               }
             </div>
-            <div className="h-full w-[47%] flex flex-col justify-between">
+            <div className={`h-full ${large ? `w-[57%]` : `w-[47%] `} pb-1 flex flex-col justify-between`}>
                 <div className="h-fit w-full flex justify-between">
                   <div className=" flex w-[90%] flex-col gap-1">
                       <div className="self-start w-full text-[1rem] h-4/7 overflow-hidden text-ellipsis">{video.title}</div>
