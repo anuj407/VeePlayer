@@ -18,10 +18,10 @@ function VideoCard({ video }) {
   const handleProfile = (event)=>{
         event.stopPropagation();
         dispatch(fetchProfile(params))
-        navigate(`/channel/${video.owner.username}`)
+        navigate(`/profile/${video.owner.username}`)
   }
   useEffect(()=>{
-    if(window.location.href== `http://localhost:5173/channel/${params.username}`){
+    if(window.location.href== `http://localhost:5173/profile/${params.username}`){
       dispatch(fetchProfile(params))
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -34,7 +34,7 @@ function VideoCard({ video }) {
       className="w-full h-full cursor-pointer flex flex-col gap-2 items-center rounded-xl overflow-hidden"
     >
       {/* Video Container */}
-      <div className="w-full h-[58%] rounded-xl relative overflow-hidden z-10">
+      <div className="w-full h-[65%] rounded-xl relative overflow-hidden z-10">
         {/* Thumbnail (Hidden when playing) */}
         <img
           className={`${isPlaying ? "hidden" : ""} ${
@@ -68,7 +68,7 @@ function VideoCard({ video }) {
       </div>
 
       {/* Video Details */}
-      <div className="w-full h-[42%] self-start">
+      <div className="w-full h-[35%] self-start">
         <div className="flex w-full">
           <div className="w-[20%]">
             <div onClick={handleProfile} className="w-10 h-10 rounded-full overflow-hidden">
