@@ -1,63 +1,81 @@
-import { useEffect, useState } from "react"
-import Category from "../components/category"
-import Navbar from "../components/Navbar"
-import SideBar from "../components/SideBar"
-import VideoCard from "../components/VideoCard"
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchVideos } from '../store/Reducers/VideoSlice';
-import { assets } from "../assets/assets"
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchVideos } from "../store/Reducers/VideoSlice";
+import Category from "../components/Category";
+import Navbar from "../components/Navbar";
+import SideBar from "../components/SideBar";
+import VideoCard from "../components/VideoCard";
+import { assets } from "../assets/assets";
+
 function Home() {
   const dispatch = useDispatch();
   const { videos, status, error } = useSelector((state) => state.videos);
+  const [fullSideBar, setFullSidebar] = useState(false);
 
-  const [fullSideBar,setFullSidebar]=useState(false)
-  const handleHomeButton = (event)=>{
-      event.stopPropagation();
-      setFullSidebar(!fullSideBar)
-  }
+  const handleHomeButton = (e) => {
+    e.stopPropagation();
+    setFullSidebar((prev) => !prev);
+  };
+
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchVideos());
     }
   }, [status, dispatch]);
-  if (status === 'loading') return <p>Loading...</p>;
-  if (status === 'failed') return <p>Error: {error}</p>;
+
+  if (status === "loading")
+    return <p className="text-center py-10 text-lg">Loading...</p>;
+  if (status === "failed")
+    return (
+      <p className="text-center py-10 text-red-500">
+        Error: {error}
+      </p>
+    );
+
   return (
-    <div className="min-h-screen">
-      <div className="w-full h-[5rem]">
-        <Navbar/>
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white transition-all duration-500">
+      {/* === Fixed Navbar === */}
+      <header className="h-16 w-full shadow-md bg-white dark:bg-slate-800 fixed top-0 z-50 flex items-center justify-between px-4">
+        <Navbar />
+      </header>
+
+      {/* === Fixed Category Section === */}
+      <div className="h-14 flex items-center px-4 bg-white dark:bg-slate-800 shadow-sm fixed top-20 w-full z-40">
+        <div
+          onClick={handleHomeButton}
+          className="cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 p-2 rounded-xl transition-all flex items-center justify-center"
+        >
+          <assets.IoMenuOutline className="w-7 h-7 text-slate-700 dark:text-white" />
+        </div>
+        <div className="ml-4 w-full overflow-x-auto scrollbar-hide">
+          <Category />
+        </div>
       </div>
-        <div onClick={handleHomeButton} className="w-[100%] h-12 flex items-center  ">
-          <div className="w-[5rem] h-full">
-            <div className="fixed left-[2%]">
-              <assets.IoMenuOutline className="w-[2.5rem] h-full text-3xl py-1 hover:bg-[#3f3f3f] cursor-pointer  rounded-xl" />
-            </div>
-          </div>
-           <div className="left-[5.5rem] h-16 bg-black flex items-center gap-x-8 fixed top-18 z-20">     
-            <div className="w-[92vw] pr-4 flex items-center">                  
-                <Category/>
-            </div>      
+
+      {/* === Main Content === */}
+      <main className="flex w-full pt-[128px]"> {/* 64px + 56px + 8px spacing */}
+        {/* Sidebar */}
+        <div className={`${fullSideBar ? "w-[14rem]" : "w-[5rem]"} shrink-0`} >
+          <SideBar fullSideBar={fullSideBar} />
         </div>
-        </div>
-        <div className="w-full  flex">
-            <div className={`${fullSideBar ? `w-[12rem]`:`w-[5.5rem]`} h-[44rem] bg-black flex flex-col gap-8 text-[0.8rem] top-32 py-3 `}>
-              <div className="fixed">
-              <SideBar fullSideBar={fullSideBar} />
-              </div>
-            </div>
-            <div className={`py-3 w-[95%] pl-2 flex flex-wrap gap-4`}>
-            {
-              videos?.map((video,index)=>
-              <div key={index} className="w-[24%] h-[18rem]">
-                <VideoCard index={index} video={video}/>
-              </div>
-            )
-            }
-            </div>
-        </div>
+
+        {/* Videos */}
         
+        <section className="flex-1 px-4 py-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {videos?.map((video, index) => (
+              <div
+                key={index}
+                className="w-full h-[260px] rounded-xl overflow-hidden shadow-md hover:shadow-xl bg-white dark:bg-slate-800 transition-all duration-300"
+              >
+                <VideoCard video={video} index={index} />
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;
