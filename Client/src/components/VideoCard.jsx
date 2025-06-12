@@ -31,20 +31,20 @@ function VideoCard({ video }) {
       onClick={handleVideoClick}
       onMouseEnter={handlePlay}
       onMouseLeave={handlePause}
-      className="w-full h-full cursor-pointer flex flex-col gap-2 items-center rounded-xl overflow-hidden"
+      className="w-full h-[260px] cursor-pointer flex flex-col rounded-xl overflow-hidden bg-white dark:bg-slate-800 shadow-md transition duration-300"
     >
       {/* Video Container */}
-      <div className="w-full h-[65%] rounded-xl relative overflow-hidden z-10">
+      <div className="w-full h-[65%] relative">
         {/* Thumbnail (Hidden when playing) */}
         <img
           className={`${isPlaying ? "hidden" : ""} ${
             video.thumbnail ? "" : "hidden"
-          } w-full h-full absolute object-cover`}
+          } absolute w-full h-full object-cover`}
           src={video.thumbnail}
           alt=""
         />
         {/* Video */}
-        <video ref={videoRef} className="w-full h-full" muted loop>
+        <video ref={videoRef} className=" w-full h-full object-cover" muted loop>
           <source src={video.videoFile} />
         </video>
 
@@ -68,29 +68,24 @@ function VideoCard({ video }) {
       </div>
 
       {/* Video Details */}
-      <div className="w-full h-[35%] self-start">
-        <div className="flex w-full">
-          <div className="w-[20%]">
-            <div onClick={handleProfile} className="w-10 h-10 rounded-full overflow-hidden">
-              <img
-                className="w-full h-full object-cover"
-                src={video.owner.avatar}
-                alt=""
-              />
-            </div>
+     <div className="w-full h-[35%] flex p-3">
+        <div className="w-10 h-10 rounded-full overflow-hidden mr-3">
+          <img
+            className="w-full h-full object-cover"
+            src={video.owner.avatar}
+            alt={video.owner.fullName}
+            onClick={handleProfile}
+          />
+        </div>
+        <div className="flex-1 overflow-hidden">
+          <p className="text-base font-semibold text-gray-900 dark:text-white truncate">{video.title}</p>
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            <h3 onClick={handleProfile} className="cursor-pointer  truncate">{video.owner.fullName}</h3>
+            <p>{video.views.toLocaleString()} views</p>
           </div>
-          <div className="w-[80%] flex">
-            <div className="w-[92%]">
-            <p className="text-[1.1rem] w-full overflow-hidden text-ellipsis" >{video.title} </p>
-            <div className="text-sm text-[#cbcbcb]">
-              <h3 onClick={handleProfile} >{video.owner.fullName}</h3>
-              <p>{video.views} views</p>
-            </div>
-            </div>
-            <div className="w-[8%]">
-                <assets.BiDotsVerticalRounded className="text-xl"/>
-            </div>
-          </div>
+        </div>
+        <div className="text-gray-500 dark:text-gray-400 ml-2">
+          <assets.BiDotsVerticalRounded className="text-xl" />
         </div>
       </div>
     </div>
