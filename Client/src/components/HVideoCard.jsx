@@ -26,8 +26,8 @@ function HVideoCard({video,large=false}) {
          onClick={handleVideoClick}
          onMouseEnter={handlePlay}
          onMouseLeave={handlePause}
-         className="cursor-pointer w-full h-full px-1 py-2 rounded-xl text-sm flex items-center gap-3">
-            <div className={`${large ?`w-[40%]`:`w-[50%]`} h-full rounded-md relative overflow-hidden`}>
+         className="cursor-pointer w-full h-[8rem] rounded-xl text-sm flex items-center gap-3 shadow-[0_0_8px_rgba(0,0,0,0.5)]">
+            <div className={`${large ?`w-[40%]`:`w-[50%]`} h-full rounded-md relative overflow-hidden shadow-[0_0_8px_rgba(0,0,0,0.5)]`}>
               {video.thumbnail &&             
                 <img  className={`${isPlaying ? "hidden" : ""} ${
                   video.thumbnail ? "" : "hidden"
@@ -54,7 +54,7 @@ function HVideoCard({video,large=false}) {
                   </div>
               }
             </div>
-            <div className={`h-full ${large ? `w-[57%]` : `w-[47%] `} pb-1 flex flex-col justify-between`}>
+            <div className={`h-full ${large ? `w-[57%]` : `w-[47%] `} pb-1 px-1 py-2 flex flex-col justify-between`}>
                 <div className="h-fit w-full flex justify-between">
                   <div className=" flex w-[90%] flex-col gap-1">
                       <div className="self-start w-full text-[1rem] h-4/7 overflow-hidden text-ellipsis">{video.title}</div>
