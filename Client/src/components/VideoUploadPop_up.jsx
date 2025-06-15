@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {assets} from "../assets/assets.js"
 import {useDropzone} from 'react-dropzone'
 import { apiUrl } from "../utils/constants.jsx";
+import PopUp_Message from "./PopUp_Message.jsx";
 function VideoUploadPop_up({closePopUp}) {
 
   const fileInputRef = useRef(null);
@@ -318,14 +319,10 @@ const handleUpload = async () => {
       </div>   
       {/* Pop-Up Message  */}
       {alertVisible && (
-        <div className="fixed bottom-5 mx-auto  bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-          ✅ Text Copied!
-        </div>
+        <PopUp_Message message={"✅ Text Copied!"} />
       )}
       {uploaded && (
-        <div className="fixed bottom-5 mx-auto  bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-          ✅ Video Upload Successfully!
-        </div>
+         <PopUp_Message message={"✅ Video Upload Successfully!"} />
       )}
     </>
   )
