@@ -11,6 +11,7 @@ function VideoWatch() {
   
   const { isTokenValid } = useSelector(selectUser)
   const { videoId } = useParams();
+ 
   const commentUrl = `${apiUrl}/comments/add-comment/${videoId}`;
   const commentDeleteUrl = `${apiUrl}/comments/delete-comment`;
   const videoUrl = `${apiUrl}/videos/getVideo/${videoId}`
@@ -58,23 +59,23 @@ function VideoWatch() {
  const navigate = useNavigate()
   const handleProfile = (event)=>{
     event.stopPropagation();
-    navigate(`/channel/${videoData[0]?.owner?.username}`)
+    navigate(`/profile/${videoData[0]?.owner?.username}`)
 }
   return (
     <>
       <div onClick={()=>setSignInMsg(0)} className="w-[70%] flex flex-col gap-2">
-        <div className="w-full h-[35rem] rounded-3xl ">
-          <video className="w-full h-full" controls src={videoData[0].videoFile}></video>
+        <div className="w-full h-[35rem] rounded-3xl overflow-hidden shadow-[0_0_8px_rgba(0,0,0,0.5)]">
+          <video className="w-full h-full" controls src={videoData[0]?.videoFile}></video>
         </div>
         <div className="">
-          <h2 className="text-xl font-medium ml-2">{videoData[0].title}</h2>
+          <h2 className="text-xl font-medium ml-2">{videoData[0]?.title}</h2>
           <div className="mt-2 flex items-center justify-between">
             <div className="flex gap-3 items-center">
               <div onClick={handleProfile} className="w-10 h-10 rounded-full overflow-hidden">
                 <img className="w-full h-full object-cover" src={VideoOwnerAvatar} alt="" />
               </div>
               <div onClick={handleProfile} className="">
-                    <h2 className="font-medium">{videoData[0].owner?.fullName}</h2>
+                    <h2 className="font-medium">{videoData[0]?.owner?.fullName}</h2>
                     <p className="text-xs">200 subscribers</p>
               </div>
               <button className="ml-10 px-5 h-9 font-medium rounded-md bg-red-500 text-white">
@@ -85,20 +86,20 @@ function VideoWatch() {
               <div className="w-[14rem] h-[9rem] absolute z-20 top-10">
                 { !isTokenValid && (signInMsg == "Like" && <SignIn_Message title1={"Like this video?"} title={"Sign in to like this Video"}/>)}
               </div>
-              <div className="h-9 bg-[#222222] rounded-2xl flex text-2xl items-center overflow-hidden">
-                <div onClick={handleLike} className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-[#3f3f3f]">
-                  {<assets.BiLike />} <span className="text-sm font-medium">{videoData[0].totalLikes}</span>
+              <div className="h-9 bg-slate-800 rounded-2xl flex text-2xl items-center overflow-hidden">
+                <div onClick={handleLike} className="cursor-pointer h-full flex items-center gap-1.5 px-3 hover:bg-slate-900 hover:shadow-[0_0_10px_rgba(0,0,0,0.5)] ">
+                  {videoData[0]?.isLiked ? <assets.BiSolidLike /> : <assets.BiLike />} <span className="text-sm font-medium">{videoData[0]?.totalLikes}</span>
                 </div>
                 <p className="w-0.5 h-[60%] bg-zinc-500"></p>
-                <div className="cursor-pointer h-full px-3 flex items-center hover:bg-[#3f3f3f]">
+                <div className="cursor-pointer h-full px-3 flex items-center hover:bg-slate-900 hover:shadow-[0_0_10px_rgba(0,0,0,0.5)] ">
                   <assets.BiDislike />
                 </div>
               </div>
-              <button className="h-9 px-3.5 bg-[#222222] rounded-2xl flex items-center gap-2 cursor-pointer hover:bg-[#3f3f3f]">
+              <button className="h-9 px-3.5 bg-slate-800 rounded-2xl flex items-center gap-2 cursor-pointer hover:bg-slate-900 hover:shadow-[0_0_10px_rgba(0,0,0,0.5)] ">
                 <assets.PiShareFat className="text-2xl" />
                 <p className="font-medium">Share</p>
               </button>
-              <button className="h-9 px-3.5 bg-[#222222] rounded-2xl flex items-center gap-2 cursor-pointer hover:bg-[#3f3f3f]">
+              <button className="h-9 px-3.5 bg-slate-800 rounded-2xl flex items-center gap-2 cursor-pointer hover:bg-slate-900 hover:shadow-[0_0_10px_rgba(0,0,0,0.5)] ">
                 <assets.LiaDownloadSolid className="text-2xl" />
                 <p className="font-medium">Download</p>
               </button>
@@ -106,15 +107,15 @@ function VideoWatch() {
             </div>
           </div>
         </div>
-        <div className="w-full h-20 mt-3 rounded-xl bg-[#222222] p-2">
+        <div className="w-full h-20 mt-3 rounded-xl bg-slate-800 p-2">
           <div className="flex gap-2">
-            <h3>{videoData[0].views} views</h3>
+            <h3>{videoData[0]?.views} views</h3>
             <h3>{timeAgo}</h3>
           </div>
-          <p>{videoData[0].description}</p>
+          <p>{videoData[0]?.description}</p>
         </div>
         {/* Comments part */}
-        <div className="h-[10rem] mt-3 relative">
+        <div className=" mt-3 relative">
             <div className="w-full flex gap-2 items-center">
                 <div className="w-10 h-10 rounded-full overflow-hidden">
                   { isTokenValid ? <img className="w-full h-full object-cover" src={avatar} alt="" /> : <assets.IoPersonCircleOutline className="text-3xl" />}
@@ -128,8 +129,8 @@ function VideoWatch() {
                 </div>
             </div>
             <div className="w-full flex gap-2.5 justify-end items-center">
-                <button className="font-medium px-4 py-1.5 cursor-pointer rounded-full hover:bg-[#2f2f2f]">Cancel</button>
-                <button onClick={()=>handleClick()}  className={`font-medium px-4 py-1.5 rounded-full bg-[#222222]  ${inputs ? `opacity-[1] hover:bg-[#3f3f3f] cursor-pointer`:`opacity-[0.4]`}`}>Comment</button>
+                <button className="font-medium px-4 py-1.5 cursor-pointer rounded-full hover:bg-slate-900 hover:shadow-[0_0_10px_rgba(0,0,0,0.5)] ">Cancel</button>
+                <button onClick={()=>handleClick()}  className={`font-medium px-4 py-1.5 rounded-full bg-slate-800  ${inputs ? `opacity-[1] hover:bg-slate-900 hover:shadow-[0_0_10px_rgba(0,0,0,0.5)]  cursor-pointer`:`opacity-[0.4]`}`}>Comment</button>
             </div>            
             <div className="py-6 flex flex-col gap-5">
               {comments.map((comment,index)=>
@@ -141,14 +142,14 @@ function VideoWatch() {
                       <div className="">
                           <h2 className="font-medium">{comment.commentedBy.username} {comment.createdAt}</h2>
                           <p className="py-1">{comment.content}</p>
-                          <div className="text-2xl text-[#848282] flex gap-1.5">
+                          <div className="text-2xl text-[#848282] flex gap-1.5 ">
                               <assets.BiLike className="cursor-pointer"/>
                               <assets.BiDislike className="cursor-pointer"/>
                           </div>
                       </div>
                     </div>
                     <div className=" w-24 relative">
-                      <button onClick={()=>DeleteCommnet(index)}  className={`${CommentIndex == index && delButton ? ``:`hidden`} absolute top-1 left-1 px-3 h-8 py-1 bg-[#2f2f2f] rounded-md cursor-pointer hover:bg-[#3f3f3f] text-sm mt-1 `}>delete</button>
+                      <button onClick={()=>DeleteCommnet(index)}  className={`${CommentIndex == index && delButton ? ``:`hidden`} absolute top-1 left-1 px-3 h-8 py-1 bg-[#2f2f2f] rounded-md cursor-pointer hover:bg-slate-900 hover:shadow-[0_0_10px_rgba(0,0,0,0.5)]  text-sm mt-1 `}>delete</button>
                       <span onClick={()=>handleDelButton(index)} className={`float-right w-8 h-8 rounded-full cursor-pointer text-2xl hover:bg-[#2f2f2f] flex justify-center items-center `}><assets.BiDotsVerticalRounded /></span>
                     </div>
                   </div>
@@ -174,6 +175,7 @@ const HandleVideoWatch =(commentUrl,videoUrl,commentDeleteUrl,likeUrl)=>{
     try {
       const response = await fetch(`${videoUrl}`, {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
